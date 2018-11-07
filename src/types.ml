@@ -210,8 +210,3 @@ and Very_low_priority_worker : sig
     { execution_context : Execution_context.t
     ; exec              : unit -> Exec_result.t }
 end = Very_low_priority_worker
-
-and Tracing : sig
-  type tracing_fns = 
-  { trace_thread_switch : Execution_context.t -> unit }
-end = Tracing
