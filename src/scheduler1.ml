@@ -120,6 +120,7 @@ type t = Scheduler0.t =
   ; mutable check_invariants                    : bool
   ; mutable max_num_jobs_per_priority_per_cycle : Max_num_jobs_per_priority_per_cycle.t
   ; mutable record_backtraces                   : bool
+  ; mutable cycle_started : bool
   ; mutable on_start_of_cycle                   : unit -> unit
   ; mutable on_end_of_cycle                     : unit -> unit }
 [@@deriving fields, sexp_of]
@@ -172,6 +173,7 @@ let invariant t : unit =
       ~check_invariants:ignore
       ~max_num_jobs_per_priority_per_cycle:ignore
       ~record_backtraces:ignore
+      ~cycle_started:ignore
       ~on_start_of_cycle:ignore
       ~on_end_of_cycle:ignore
     ;
@@ -243,6 +245,7 @@ let create () =
     ; check_invariants                     = Async_kernel_config.check_invariants
     ; max_num_jobs_per_priority_per_cycle  = Async_kernel_config.max_num_jobs_per_priority_per_cycle
     ; record_backtraces                    = Async_kernel_config.record_backtraces
+    ; cycle_started = false
     ; on_start_of_cycle                    = Fn.id
     ; on_end_of_cycle                      = Fn.id }
   and events = Timing_wheel_ns.create ~config:Async_kernel_config.timing_wheel_config ~start:now
