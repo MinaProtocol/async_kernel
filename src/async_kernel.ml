@@ -38,6 +38,7 @@ module Synchronous_time_source                   = Synchronous_time_source
 module Tail                                      = Tail
 module Throttle                                  = Throttle
 module Time_source                               = Time_source
+module Tracing                                   = Tracing
 
 (** Intended usage is to [open Use_eager_deferred] to shadow operations from the non-eager
     world and rebind them to their eager counterparts. *)
