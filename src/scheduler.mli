@@ -43,6 +43,7 @@ val set_record_backtraces : t -> bool -> unit
 val run_every_cycle_start : t -> f:(unit -> unit) -> unit
 val long_cycles : t -> at_least:Time_ns.Span.t -> Time_ns.Span.t Async_stream.t
 val long_cycles_with_context : t -> at_least:Time_ns.Span.t -> (Time_ns.Span.t * Execution_context.t) Async_stream.t
+val long_jobs_with_context : t -> (Execution_context.t * Time_ns.Span.t) Async_stream.t
 val can_run_a_job : t -> bool
 val create_alarm : t -> (unit -> unit) -> Gc.Expert.Alarm.t
 val add_finalizer : t -> 'a Heap_block.t -> ('a Heap_block.t -> unit) -> unit

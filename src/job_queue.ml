@@ -167,7 +167,10 @@ let run_jobs (type a) t scheduler =
          the job out of the queue and decrement [jobs_left_this_cycle].  [run_job] or
          [run_external_jobs] may side effect [t], either by enqueueing jobs, or by
          clearing [t]. *)
+      let start = Time_ns.now () in
       run_job t scheduler execution_context f a;
+      let this_job_time = Time_ns.(diff (now ()) start) in
+      if Float.(Time_ns.Span.to_ms this_job_time >= 2000.) then scheduler.long_jobs_last_cycle <- (execution_context, this_job_time) :: scheduler.long_jobs_last_cycle;
       (* [run_external_jobs] at each iteration of the [while] loop, for fairness. *)
       run_external_jobs t scheduler
     done;

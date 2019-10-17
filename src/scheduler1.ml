@@ -115,6 +115,7 @@ type t = Scheduler0.t =
   ; mutable record_backtraces : bool
   ; mutable on_start_of_cycle : unit -> unit
   ; mutable on_end_of_cycle : unit -> unit
+  ; mutable long_jobs_last_cycle : (Execution_context.t * Time_ns.Span.t) list
   ; mutable cycle_started : bool
   }
 [@@deriving fields, sexp_of]
@@ -174,6 +175,7 @@ let invariant t : unit =
       ~max_num_jobs_per_priority_per_cycle:ignore
       ~record_backtraces:ignore
       ~cycle_started:ignore
+      ~long_jobs_last_cycle:ignore
       ~on_start_of_cycle:ignore
       ~on_end_of_cycle:ignore
   with
@@ -249,6 +251,7 @@ let create () =
     ; cycle_started = false
     ; on_start_of_cycle = Fn.id
     ; on_end_of_cycle = Fn.id
+    ; long_jobs_last_cycle= []
     }
   and events =
     Timing_wheel_ns.create ~config:Async_kernel_config.timing_wheel_config ~start:now

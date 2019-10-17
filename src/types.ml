@@ -200,6 +200,7 @@ and Scheduler : sig
     ; mutable record_backtraces : bool
     ; mutable on_start_of_cycle : unit -> unit
     ; mutable on_end_of_cycle : unit -> unit
+    ; mutable long_jobs_last_cycle : (Execution_context.t * Time_ns.Span.t) list
     ; mutable cycle_started : bool
     }
 end =
@@ -248,6 +249,6 @@ end =
   Very_low_priority_worker
 
 and Tracing : sig
-  type tracing_fns = 
+  type tracing_fns =
   { trace_thread_switch : Execution_context.t -> unit }
 end = Tracing
