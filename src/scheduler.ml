@@ -57,7 +57,7 @@ let long_cycles_with_context t ~at_least =
 let long_jobs_with_context t =
   Stream.create (fun tail ->
     run_every_cycle_start t ~f:(fun () ->
-      List.iter t.long_jobs_last_cycle ~f:(fun job -> Tail.extend tail job)))
+        List.iter t.long_jobs_last_cycle ~f:(fun job -> Tail.extend tail job) ; t.long_jobs_last_cycle <- [] ))
 ;;
 
 let cycle_num_jobs t =
