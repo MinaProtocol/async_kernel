@@ -1,0 +1,1782 @@
+## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+
+load(
+    "@obazl_rules_ocaml//ocaml:build.bzl",
+    "ocaml_archive",
+    "ocaml_interface",
+    "ocaml_module",
+    "ocaml_ns_module",
+    "ppx_executable",
+)
+
+COMMON_OPTS = select({
+    "//bzl/config:enable_verbose": ["-verbose"],
+    "//conditions:default": ["-thread"],
+}) + [
+    "-strict-formats",
+    "-short-paths",
+    "-strict-sequence"
+]
+
+LINK_OPTS = select({
+    "//bzl/config:always_link": ["-linkall"],
+    "//conditions:default": [],
+}) + []
+
+EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+COMMON_DEPS = []
+
+PPX_EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_NS_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+ASYNC_KERNEL_NS = "Async_kernel"
+
+## (ppx_jane -annotated-ignores -check-doc-comments)
+PPX_0 = "//bzl/ppx:ppx[ppx_jane]"
+
+PPX_0_ARGS = [
+    # do not sort (buildifier)
+    "-cookie",
+    "library-name=\"async_kernel\"",
+    "-corrected-suffix",
+    ".ppx-corrected",
+    "-annotated-ignores",
+    "-check-doc-comments",
+    "-dump-ast"
+]
+
+ocaml_archive(
+    name = "async_kernel",
+    opts = ARCHIVE_OPTS,
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort (buildifier)
+        ":async_kernel_ns_module",
+        ":async_gc.cm_",
+        ":deferred_queue.cm_",
+        ":clock_intf.cm_",
+        ":deferred_sequence.cm_",
+        ":job_queue.cm_",
+        ":deferred.cm_",
+        ":async_quickcheck_intf.cm_",
+        ":ivar_filler.cm_",
+        ":bvar.cm_",
+        ":clock_ns.cm_",
+        ":async_stream.cm_",
+        ":pipe.cm_",
+        ":time_ns.cm_",
+        ":async_kernel_config.cm_",
+        ":execution_context.cm_",
+        ":ivar0.cm_",
+        ":time_source.cm_",
+        ":async_kernel.cm_",
+        ":job_pool.cm_",
+        ":monad_sequence.cm_",
+        ":mvar.cm_",
+        ":deferred_result.cm_",
+        ":deferred_or_error.cm_",
+        ":priority.cm_",
+        ":async_condition.cm_",
+        ":lazy_deferred.cm_",
+        ":deferred_map.cm_",
+        ":deferred_option.cm_",
+        ":external_job.cm_",
+        ":throttle.cm_",
+        ":deferred_array.cm_",
+        ":import.cm_",
+        ":time_source_intf.cm_",
+        ":debug.cm_",
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":scheduler.cm_",
+        ":async_invariant_intf.cm_",
+        ":async_invariant.cm_",
+        ":tail.cm_",
+        ":stack_or_counter.cm_",
+        ":types.cm_",
+        ":job_or_event_intf.cm_",
+        ":deferred0.cm_",
+        ":deferred_memo.cm_",
+        ":ivar.cm_",
+        ":deferred_list.cm_",
+        ":scheduler1.cm_",
+        ":tracing.cm_",
+        ":monitor0.cm_",
+        ":scheduler0.cm_",
+        ":job.cm_",
+        ":synchronous_time_source0.cm_",
+        ":synchronous_time_source.cm_",
+        ":async_quickcheck.cm_",
+        ":require_explicit_time_source.cm_",
+        ":monitor.cm_",
+        ":job_or_event.cm_",
+    ],
+)
+
+ocaml_ns_module(
+    name = "async_kernel_ns_module",
+    ns = ASYNC_KERNEL_NS,
+    submodules = [
+        # do not sort (buildifier)
+        "async_gc.ml",
+        "deferred_queue.ml",
+        "clock_intf.ml",
+        "deferred_sequence.ml",
+        "job_queue.ml",
+        "deferred.ml",
+        "async_quickcheck_intf.ml",
+        "ivar_filler.ml",
+        "bvar.ml",
+        "clock_ns.ml",
+        "async_stream.ml",
+        "pipe.ml",
+        "time_ns.ml",
+        "async_kernel_config.ml",
+        "execution_context.ml",
+        "ivar0.ml",
+        "time_source.ml",
+        "async_kernel.ml",
+        "job_pool.ml",
+        "monad_sequence.ml",
+        "mvar.ml",
+        "deferred_result.ml",
+        "deferred_or_error.ml",
+        "priority.ml",
+        "async_condition.ml",
+        "lazy_deferred.ml",
+        "deferred_map.ml",
+        "deferred_option.ml",
+        "external_job.ml",
+        "throttle.ml",
+        "deferred_array.ml",
+        "import.ml",
+        "time_source_intf.ml",
+        "debug.ml",
+        "deferred1.ml",
+        "deferred_std.ml",
+        "scheduler.ml",
+        "async_invariant_intf.ml",
+        "async_invariant.ml",
+        "tail.ml",
+        "stack_or_counter.ml",
+        "types.ml",
+        "job_or_event_intf.ml",
+        "deferred0.ml",
+        "deferred_memo.ml",
+        "ivar.ml",
+        "deferred_list.ml",
+        "scheduler1.ml",
+        "tracing.ml",
+        "monitor0.ml",
+        "scheduler0.ml",
+        "job.ml",
+        "synchronous_time_source0.ml",
+        "synchronous_time_source.ml",
+        "async_quickcheck.ml",
+        "require_explicit_time_source.ml",
+        "monitor.ml",
+        "job_or_event.ml",
+    ],
+)
+
+COMMON_DEPS_ASYNC_KERNEL = [
+    # do not sort (buildifier)
+    "@opam//pkg:core_kernel",
+    "@opam//pkg:core_kernel.moption",
+    "@opam//pkg:core_kernel.thread_pool_cpu_affinity",
+    "@opam//pkg:core_kernel.thread_safe_queue",
+]
+
+ocaml_interface(
+    name = "async_gc.cmi",
+    intf = "async_gc.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL,
+)
+
+ocaml_module(
+    name = "async_gc.cm_",
+    impl = "async_gc.ml",
+    intf = ":async_gc.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":scheduler.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_queue.cmi",
+    intf = "deferred_queue.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_queue.cm_",
+    impl = "deferred_queue.ml",
+    intf = ":deferred_queue.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred_list.cm_",
+        ":deferred_std.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "clock_intf.cm_",
+    impl = "clock_intf.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_stream.cm_",
+        ":deferred1.cm_",
+        ":ivar.cm_",
+        ":time_source.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_sequence.cmi",
+    intf = "deferred_sequence.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_sequence.cm_",
+    impl = "deferred_sequence.ml",
+    intf = ":deferred_sequence.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":throttle.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "job_queue.cmi",
+    intf = "job_queue.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":scheduler0.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "job_queue.cm_",
+    impl = "job_queue.ml",
+    intf = ":job_queue.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":external_job.cm_",
+        ":import.cm_",
+        ":scheduler0.cm_",
+        ":time_ns.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred.cmi",
+    intf = "deferred.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_array.cm_",
+        ":deferred_list.cm_",
+        ":deferred_map.cm_",
+        ":deferred_memo.cm_",
+        ":deferred_option.cm_",
+        ":deferred_or_error.cm_",
+        ":deferred_queue.cm_",
+        ":deferred_result.cm_",
+        ":deferred_sequence.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred.cm_",
+    impl = "deferred.ml",
+    intf = ":deferred.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_array.cm_",
+        ":deferred_list.cm_",
+        ":deferred_map.cm_",
+        ":deferred_memo.cm_",
+        ":deferred_option.cm_",
+        ":deferred_or_error.cm_",
+        ":deferred_queue.cm_",
+        ":deferred_result.cm_",
+        ":deferred_sequence.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_quickcheck_intf.cm_",
+    impl = "async_quickcheck_intf.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "ivar_filler.cmi",
+    intf = "ivar_filler.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred0.cm_",
+        ":import.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "ivar_filler.cm_",
+    impl = "ivar_filler.ml",
+    intf = ":ivar_filler.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":ivar.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "bvar.cmi",
+    intf = "bvar.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred0.cm_",
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "bvar.cm_",
+    impl = "bvar.ml",
+    intf = ":bvar.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":ivar.cm_",
+        ":scheduler1.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "clock_ns.cmi",
+    intf = "clock_ns.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":clock_intf.cm_",
+        ":import.cm_",
+        ":time_ns.cm_",
+        ":time_source_intf.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "clock_ns.cm_",
+    impl = "clock_ns.ml",
+    intf = ":clock_ns.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":clock_intf.cm_",
+        ":import.cm_",
+        ":scheduler1.cm_",
+        ":time_source.cm_",
+        ":time_source_intf.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "async_stream.cmi",
+    intf = "async_stream.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":import.cm_",
+        ":tail.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_stream.cm_",
+    impl = "async_stream.ml",
+    intf = ":async_stream.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":ivar.cm_",
+        ":monitor.cm_",
+        ":tail.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "pipe.cmi",
+    intf = "pipe.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_stream.cm_",
+        ":deferred.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "pipe.cm_",
+    impl = "pipe.ml",
+    intf = ":pipe.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_stream.cm_",
+        ":deferred.cm_",
+        ":deferred_std.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":monitor.cm_",
+        ":tail.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "time_ns.cm_",
+    impl = "time_ns.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL,
+)
+
+ocaml_interface(
+    name = "async_kernel_config.cmi",
+    intf = "async_kernel_config.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_kernel_config.cm_",
+    impl = "async_kernel_config.ml",
+    intf = ":async_kernel_config.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "execution_context.cmi",
+    intf = "execution_context.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":monitor0.cm_",
+        ":priority.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "execution_context.cm_",
+    impl = "execution_context.ml",
+    intf = ":execution_context.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":monitor0.cm_",
+        ":priority.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "ivar0.cmi",
+    intf = "ivar0.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "ivar0.cm_",
+    impl = "ivar0.ml",
+    intf = ":ivar0.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":scheduler1.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "time_source.cmi",
+    intf = "time_source.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":time_source_intf.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "time_source.cm_",
+    impl = "time_source.ml",
+    intf = ":time_source.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":bvar.cm_",
+        ":debug.cm_",
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":job_or_event.cm_",
+        ":monitor.cm_",
+        ":scheduler1.cm_",
+        ":synchronous_time_source.cm_",
+        ":synchronous_time_source0.cm_",
+        ":tail.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_kernel.cm_",
+    impl = "async_kernel.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_condition.cm_",
+        ":async_gc.cm_",
+        ":async_invariant.cm_",
+        ":async_kernel_config.cm_",
+        ":async_quickcheck.cm_",
+        ":async_stream.cm_",
+        ":bvar.cm_",
+        ":clock_ns.cm_",
+        ":debug.cm_",
+        ":deferred.cm_",
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":ivar0.cm_",
+        ":ivar_filler.cm_",
+        ":job.cm_",
+        ":lazy_deferred.cm_",
+        ":monad_sequence.cm_",
+        ":monitor.cm_",
+        ":mvar.cm_",
+        ":pipe.cm_",
+        ":priority.cm_",
+        ":require_explicit_time_source.cm_",
+        ":scheduler.cm_",
+        ":stack_or_counter.cm_",
+        ":synchronous_time_source.cm_",
+        ":tail.cm_",
+        ":throttle.cm_",
+        ":time_source.cm_",
+        ":tracing.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "job_pool.cmi",
+    intf = "job_pool.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "job_pool.cm_",
+    impl = "job_pool.ml",
+    intf = ":job_pool.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "monad_sequence.cm_",
+    impl = "monad_sequence.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "mvar.cmi",
+    intf = "mvar.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+        ":import.cm_",
+        ":pipe.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "mvar.cm_",
+    impl = "mvar.ml",
+    intf = ":mvar.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":bvar.cm_",
+        ":deferred_std.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":pipe.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_result.cmi",
+    intf = "deferred_result.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_result.cm_",
+    impl = "deferred_result.ml",
+    intf = ":deferred_result.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_or_error.cmi",
+    intf = "deferred_or_error.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":import.cm_",
+        ":monad_sequence.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_or_error.cm_",
+    impl = "deferred_or_error.ml",
+    intf = ":deferred_or_error.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_result.cm_",
+        ":import.cm_",
+        ":monitor.cm_",
+        ":throttle.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "priority.cmi",
+    intf = "priority.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "priority.cm_",
+    impl = "priority.ml",
+    intf = ":priority.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "async_condition.cmi",
+    intf = "async_condition.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_condition.cm_",
+    impl = "async_condition.ml",
+    intf = ":async_condition.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+        ":ivar.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "lazy_deferred.cmi",
+    intf = "lazy_deferred.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "lazy_deferred.cm_",
+    impl = "lazy_deferred.ml",
+    intf = ":lazy_deferred.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+        ":deferred_std.cm_",
+        ":ivar.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_map.cmi",
+    intf = "deferred_map.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":monad_sequence.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_map.cm_",
+    impl = "deferred_map.ml",
+    intf = ":deferred_map.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_list.cm_",
+        ":deferred_std.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_option.cmi",
+    intf = "deferred_option.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred0.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_option.cm_",
+    impl = "deferred_option.ml",
+    intf = ":deferred_option.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "external_job.cmi",
+    intf = "external_job.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "external_job.cm_",
+    impl = "external_job.ml",
+    intf = ":external_job.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "throttle.cmi",
+    intf = "throttle.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":monad_sequence.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "throttle.cm_",
+    impl = "throttle.ml",
+    intf = ":throttle.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":monitor.cm_",
+        ":stack_or_counter.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_array.cmi",
+    intf = "deferred_array.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_array.cm_",
+    impl = "deferred_array.ml",
+    intf = ":deferred_array.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":ivar.cm_",
+        ":throttle.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "import.cm_",
+    impl = "import.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_kernel_config.cm_",
+        ":debug.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "time_source_intf.cm_",
+    impl = "time_source_intf.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_stream.cm_",
+        ":deferred1.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":job.cm_",
+        ":synchronous_time_source.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "debug.cmi",
+    intf = "debug.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_kernel_config.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "debug.cm_",
+    impl = "debug.ml",
+    intf = ":debug.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_kernel_config.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred1.cm_",
+    impl = "deferred1.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred0.cm_",
+        ":ivar.cm_",
+        ":monad_sequence.cm_",
+        ":scheduler1.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_std.cm_",
+    impl = "deferred_std.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "scheduler.cmi",
+    intf = "scheduler.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_stream.cm_",
+        ":deferred1.cm_",
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":job.cm_",
+        ":monitor.cm_",
+        ":priority.cm_",
+        ":time_ns.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "scheduler.cm_",
+    impl = "scheduler.ml",
+    intf = ":scheduler.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_stream.cm_",
+        ":bvar.cm_",
+        ":debug.cm_",
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":execution_context.cm_",
+        ":external_job.cm_",
+        ":import.cm_",
+        ":job_queue.cm_",
+        ":monitor.cm_",
+        ":scheduler1.cm_",
+        ":synchronous_time_source0.cm_",
+        ":tail.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_invariant_intf.cm_",
+    impl = "async_invariant_intf.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+        ":import.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "async_invariant.cmi",
+    intf = "async_invariant.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_invariant_intf.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_invariant.cm_",
+    impl = "async_invariant.ml",
+    intf = ":async_invariant.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_invariant_intf.cm_",
+        ":deferred.cm_",
+        ":import.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "tail.cmi",
+    intf = "tail.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "tail.cm_",
+    impl = "tail.ml",
+    intf = ":tail.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "stack_or_counter.cmi",
+    intf = "stack_or_counter.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL,
+)
+
+ocaml_module(
+    name = "stack_or_counter.cm_",
+    impl = "stack_or_counter.ml",
+    intf = ":stack_or_counter.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL,
+)
+
+ocaml_module(
+    name = "types.cm_",
+    impl = "types.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":priority.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "job_or_event_intf.cm_",
+    impl = "job_or_event_intf.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":job.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred0.cmi",
+    intf = "deferred0.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":ivar0.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred0.cm_",
+    impl = "deferred0.ml",
+    intf = ":deferred0.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":ivar0.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_memo.cmi",
+    intf = "deferred_memo.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":import.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_memo.cm_",
+    impl = "deferred_memo.ml",
+    intf = ":deferred_memo.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":monitor.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "ivar.cmi",
+    intf = "ivar.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred0.cm_",
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "ivar.cm_",
+    impl = "ivar.ml",
+    intf = ":ivar.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred0.cm_",
+        ":ivar0.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "deferred_list.cmi",
+    intf = "deferred_list.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "deferred_list.cm_",
+    impl = "deferred_list.ml",
+    intf = ":deferred_list.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":ivar.cm_",
+        ":throttle.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "scheduler1.cm_",
+    impl = "scheduler1.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_kernel_config.cm_",
+        ":debug.cm_",
+        ":execution_context.cm_",
+        ":external_job.cm_",
+        ":import.cm_",
+        ":job_pool.cm_",
+        ":job_queue.cm_",
+        ":priority.cm_",
+        ":scheduler0.cm_",
+        ":synchronous_time_source0.cm_",
+        ":time_ns.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "tracing.cm_",
+    impl = "tracing.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "monitor0.cm_",
+    impl = "monitor0.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":debug.cm_",
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "scheduler0.cm_",
+    impl = "scheduler0.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":tracing.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "job.cmi",
+    intf = "job.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "job.cm_",
+    impl = "job.ml",
+    intf = ":job.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":job_pool.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "synchronous_time_source0.cm_",
+    impl = "synchronous_time_source0.ml",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS + [
+    ],
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":job_or_event_intf.cm_",
+        ":job_or_event.cm_",
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":job.cm_",
+        ":monitor0.cm_",
+        ":scheduler0.cm_",
+        ":time_ns.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "synchronous_time_source.cmi",
+    intf = "synchronous_time_source.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":import.cm_",
+        ":job.cm_",
+        ":time_ns.cm_",
+        ":types.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "synchronous_time_source.cm_",
+    impl = "synchronous_time_source.ml",
+    intf = ":synchronous_time_source.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":scheduler1.cm_",
+        ":synchronous_time_source0.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "async_quickcheck.cmi",
+    intf = "async_quickcheck.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_quickcheck_intf.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "async_quickcheck.cm_",
+    impl = "async_quickcheck.ml",
+    intf = ":async_quickcheck.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "require_explicit_time_source.cmi",
+    intf = "require_explicit_time_source.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":clock_intf.cm_",
+        ":deferred.cm_",
+        ":import.cm_",
+        ":scheduler.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "require_explicit_time_source.cm_",
+    impl = "require_explicit_time_source.ml",
+    intf = ":require_explicit_time_source.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":clock_ns.cm_",
+        ":import.cm_",
+        ":scheduler.cm_",
+        ":time_ns.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "monitor.cmi",
+    intf = "monitor.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":deferred1.cm_",
+        ":execution_context.cm_",
+        ":monitor0.cm_",
+        ":priority.cm_",
+        ":tail.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "monitor.cm_",
+    impl = "monitor.ml",
+    intf = ":monitor.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":async_kernel_config.cm_",
+        ":debug.cm_",
+        ":deferred1.cm_",
+        ":deferred_std.cm_",
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":ivar.cm_",
+        ":ivar_filler.cm_",
+        ":monitor0.cm_",
+        ":priority.cm_",
+        ":scheduler1.cm_",
+        ":tail.cm_",
+    ],
+)
+
+ocaml_interface(
+    name = "job_or_event.cmi",
+    intf = "job_or_event.mli",
+    ns_module = ":async_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":job_or_event_intf.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "job_or_event.cm_",
+    impl = "job_or_event.ml",
+    intf = ":job_or_event.cmi",
+    ns_module = ":async_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_ASYNC_KERNEL + [
+        ":execution_context.cm_",
+        ":import.cm_",
+        ":time_ns.cm_",
+        ":types.cm_",
+    ],
+)

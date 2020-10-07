@@ -1,0 +1,118 @@
+## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+
+load(
+    "@obazl_rules_ocaml//ocaml:build.bzl",
+    "ocaml_archive",
+    "ocaml_interface",
+    "ocaml_module",
+    "ocaml_ns_module",
+    "ppx_executable",
+)
+
+COMMON_OPTS = select({
+    "//bzl/config:enable_verbose": ["-verbose"],
+    "//conditions:default": ["-thread"],
+}) + []
+
+LINK_OPTS = select({
+    "//bzl/config:always_link": ["-linkall"],
+    "//conditions:default": [],
+}) + []
+
+EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+COMMON_DEPS = []
+
+PPX_EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_NS_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PERSISTENT_CONNECTION_KERNEL_NS = "Persistent_connection_kernel"
+
+## (ppx_jane)
+PPX_0 = "//bzl/ppx:ppx[ppx_jane]"
+
+PPX_0_ARGS = [
+    # do not sort (buildifier)
+    "-cookie",
+    "library-name=\"async_kernel\"",
+    "-corrected-suffix",
+    ".ppx-corrected",
+]
+
+ocaml_archive(
+    name = "persistent_connection_kernel",
+    opts = ARCHIVE_OPTS,
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort (buildifier)
+        ":persistent_connection_kernel_ns_module",
+        ":persistent_connection_kernel_intf.cm_",
+        ":persistent_connection_kernel.cm_",
+    ],
+)
+
+ocaml_ns_module(
+    name = "persistent_connection_kernel_ns_module",
+    ns = PERSISTENT_CONNECTION_KERNEL_NS,
+    submodules = [
+        # do not sort (buildifier)
+        "persistent_connection_kernel_intf.ml",
+        "persistent_connection_kernel.ml",
+    ],
+)
+
+COMMON_DEPS_PERSISTENT_CONNECTION_KERNEL = [
+    # do not sort (buildifier)
+    "@async_kernel//src:async_kernel",
+]
+
+ocaml_module(
+    name = "persistent_connection_kernel_intf.cm_",
+    impl = "persistent_connection_kernel_intf.ml",
+    ns_module = ":persistent_connection_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_PERSISTENT_CONNECTION_KERNEL,
+)
+
+ocaml_interface(
+    name = "persistent_connection_kernel.cmi",
+    intf = "persistent_connection_kernel.mli",
+    ns_module = ":persistent_connection_kernel_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_PERSISTENT_CONNECTION_KERNEL + [
+        ":persistent_connection_kernel_intf.cm_",
+    ],
+)
+
+ocaml_module(
+    name = "persistent_connection_kernel.cm_",
+    impl = "persistent_connection_kernel.ml",
+    intf = ":persistent_connection_kernel.cmi",
+    ns_module = ":persistent_connection_kernel_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_PERSISTENT_CONNECTION_KERNEL + [
+        ":persistent_connection_kernel_intf.cm_",
+    ],
+)

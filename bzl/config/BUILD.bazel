@@ -1,0 +1,18 @@
+config_setting( name = "enable_debug",
+                flag_values = { "//:debug": "True" })
+config_setting( name = "disable_debug",
+                flag_values = { "//:debug": "False" })
+
+config_setting( name = "enable_optimization",
+                flag_values = { ":optimize": "true" })
+config_setting( name = "disable_optimization",
+                flag_values = { ":optimize": "false" })
+
+config_setting( name = "enable_verbose",
+                flag_values = { "//:verbose": "True" })
+config_setting( name = "disable_verbose",
+                flag_values = { "//:verbose": "False" })
+
+config_setting( name = "always_link",
+                flag_values = { "//:always_link": "True" })
+

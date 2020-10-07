@@ -1,3 +1,11 @@
+# bazel
+.bazel
+bazel-*
+user.bazelrc
+
+# clojure
+.cpcache
+
 _build
 *.install
 *.merlin

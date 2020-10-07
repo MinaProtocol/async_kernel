@@ -1,0 +1,28 @@
+# load("@io_bazel_rules_docker//container:image.bzl", "container_image")
+
+load("@obazl_rules_ocaml//ocaml:build.bzl",
+     "ocaml_submodule_rename",  # macro
+     "ocaml_redirector_gen",  # macro
+     "ocaml_archive",
+     "ocaml_deps",
+     "ocaml_interface",
+     "ocaml_library",
+     "ocaml_module")
+
+SRCS = [
+    "src/eager_deferred.ml",
+    "src/eager_deferred0.ml",
+    "src/eager_deferred1.ml",
+    "src/eager_deferred1.mli",
+    "src/eager_deferred_or_error.ml",
+    "src/eager_deferred_or_error.mli",
+    "src/eager_deferred_result.ml",
+    "src/import.ml"
+]
+
+ocaml_archive(
+    name = "eager_deferred",
+    srcs = SRCS,
+    ppx  = [":ppx_jane"],
+    deps = ["//:async_kernel"]
+)

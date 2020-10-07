@@ -1,0 +1,25 @@
+## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+load("@obazl_rules_ocaml//ocaml:build.bzl", "ppx_executable")
+
+PPX_EXEC_OPTS = select({
+    "//bzl/config:enable_verbose": ["-verbose"],
+    "//conditions:default": [],
+}) + [
+    "-linkall",
+    "-predicates",
+    "ppx_driver",
+]
+
+ppx_executable(
+    name = "ppx[ppx_jane]",
+    srcs = [
+        # do not sort (buildifier)
+        "@obazl//ppxlib:driver_standalone_shim",
+    ],
+    opts = PPX_EXEC_OPTS,
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort (buildifier)
+        "@opam//pkg:ppx_jane",
+    ],
+)

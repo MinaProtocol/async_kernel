@@ -1,0 +1,117 @@
+## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+
+load(
+    "@obazl_rules_ocaml//ocaml:build.bzl",
+    "ocaml_archive",
+    "ocaml_interface",
+    "ocaml_module",
+    "ocaml_ns_module",
+    "ppx_executable",
+)
+
+COMMON_OPTS = select({
+    "//bzl/config:enable_verbose": ["-verbose"],
+    "//conditions:default": ["-thread"],
+}) + []
+
+LINK_OPTS = select({
+    "//bzl/config:always_link": ["-linkall"],
+    "//conditions:default": [],
+}) + []
+
+EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+COMMON_DEPS = []
+
+PPX_EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_NS_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+PPX_ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+
+WEAK_HASHTBL_ASYNC_TEST_NS = "Weak_hashtbl_async_test"
+
+## (ppx_jane)
+PPX_0 = "//bzl/ppx:ppx[ppx_jane]"
+
+PPX_0_ARGS = [
+    # do not sort (buildifier)
+    "-cookie",
+    "library-name=\"async_kernel\"",
+    "-corrected-suffix",
+    ".ppx-corrected",
+]
+
+ocaml_archive(
+    name = "weak_hashtbl_async_test",
+    opts = ARCHIVE_OPTS,
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort (buildifier)
+        ":weak_hashtbl_async_test_ns_module",
+        ":import.cm_",
+        ":test_weak_hashtbl.cm_",
+    ],
+)
+
+ocaml_ns_module(
+    name = "weak_hashtbl_async_test_ns_module",
+    ns = WEAK_HASHTBL_ASYNC_TEST_NS,
+    submodules = [
+        # do not sort (buildifier)
+        "import.ml",
+        "test_weak_hashtbl.ml",
+    ],
+)
+
+COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST = [
+    # do not sort (buildifier)
+    "@opam//pkg:async",
+    "@async_kernel//weak_hashtbl_async/src:weak_hashtbl_async",
+]
+
+ocaml_module(
+    name = "import.cm_",
+    impl = "import.ml",
+    ns_module = ":weak_hashtbl_async_test_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST,
+)
+
+ocaml_interface(
+    name = "test_weak_hashtbl.cmi",
+    intf = "test_weak_hashtbl.mli",
+    ns_module = ":weak_hashtbl_async_test_ns_module",
+    opts = INTF_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:private"],
+    deps = COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST,
+)
+
+ocaml_module(
+    name = "test_weak_hashtbl.cm_",
+    impl = "test_weak_hashtbl.ml",
+    intf = ":test_weak_hashtbl.cmi",
+    ns_module = ":weak_hashtbl_async_test_ns_module",
+    opts = IMPL_OPTS,
+    ppx = PPX_0,
+    ppx_args = PPX_0_ARGS,
+    visibility = ["//visibility:public"],
+    deps = COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST + [
+        ":import.cm_",
+    ],
+)
