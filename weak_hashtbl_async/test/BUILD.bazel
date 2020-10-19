@@ -1,72 +1,72 @@
 ## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+## Dune file: /Users/gar/mina/async_kernel/weak_hashtbl_async/test/dune
 
 load(
-    "@obazl_rules_ocaml//ocaml:build.bzl",
+    "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
     "ocaml_ns_module",
-    "ppx_executable",
 )
 
-COMMON_OPTS = select({
-    "//bzl/config:enable_verbose": ["-verbose"],
-    "//conditions:default": ["-thread"],
-}) + []
+## Global Options
+load(
+    "//bzl:config.bzl",
+    "ARCHIVE_OPTS",
+    "GLOBAL_CLI_OPTS",
+    "INTERFACE_OPTS",
+    "MODULE_OPTS",
+    "NS_MODULE_OPTS",
+)
 
-LINK_OPTS = select({
-    "//bzl/config:always_link": ["-linkall"],
-    "//conditions:default": [],
-}) + []
+## Repo Options
+load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
 
-EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
 
-IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
+LIB_1_OPTS = []
 
-INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
+LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
 
-ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
+LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
 
-COMMON_DEPS = []
+LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
 
-PPX_EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
+LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
 
-PPX_IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_NS_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-WEAK_HASHTBL_ASYNC_TEST_NS = "Weak_hashtbl_async_test"
-
-## (ppx_jane)
-PPX_0 = "//bzl/ppx:ppx[ppx_jane]"
-
-PPX_0_ARGS = [
+LIB_1_DEPS = [
     # do not sort (buildifier)
-    "-cookie",
-    "library-name=\"async_kernel\"",
-    "-corrected-suffix",
-    ".ppx-corrected",
+    "@opam//pkg:async",
+    "@async_kernel//src:async_kernel",
+    "@async_kernel//weak_hashtbl_async/src:weak_hashtbl_async",
 ]
 
+PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+
+PPX_1_ARGS = [
+    # do not sort (buildifier)
+    "-inline-test-lib", "async_kernel"
+]
+
+################################################################
+## LIB 1
+################################################################
 ocaml_archive(
     name = "weak_hashtbl_async_test",
-    opts = ARCHIVE_OPTS,
+    opts = LIB_1_ARCHIVE_OPTS,
     visibility = ["//visibility:public"],
-    deps = [
+    deps = LIB_1_DEPS + [
         # do not sort (buildifier)
-        ":weak_hashtbl_async_test_ns_module",
-        ":import.cm_",
-        ":test_weak_hashtbl.cm_",
+        ":Weak_hashtbl_async_test_ns",
+        ":Import",
+        ":Test_weak_hashtbl",
     ],
 )
 
 ocaml_ns_module(
-    name = "weak_hashtbl_async_test_ns_module",
-    ns = WEAK_HASHTBL_ASYNC_TEST_NS,
+    name = "Weak_hashtbl_async_test_ns",
+    ns = "weak_hashtbl_async_test",
+    opts = LIB_1_NS_MODULE_OPTS,
     submodules = [
         # do not sort (buildifier)
         "import.ml",
@@ -74,44 +74,34 @@ ocaml_ns_module(
     ],
 )
 
-COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST = [
-    # do not sort (buildifier)
-    "@opam//pkg:async",
-    "@async_kernel//weak_hashtbl_async/src:weak_hashtbl_async",
-]
+ocaml_module(
+    name = "Import",
+    src = "import.ml",
+    ns_module = ":Weak_hashtbl_async_test_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+)
 
 ocaml_module(
-    name = "import.cm_",
-    impl = "import.ml",
-    ns_module = ":weak_hashtbl_async_test_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST,
+    name = "Test_weak_hashtbl",
+    src = "test_weak_hashtbl.ml",
+    intf = ":_Test_weak_hashtbl",
+    ns_module = ":Weak_hashtbl_async_test_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Import",
+    ],
 )
 
 ocaml_interface(
-    name = "test_weak_hashtbl.cmi",
-    intf = "test_weak_hashtbl.mli",
-    ns_module = ":weak_hashtbl_async_test_ns_module",
-    opts = INTF_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:private"],
-    deps = COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST,
-)
-
-ocaml_module(
-    name = "test_weak_hashtbl.cm_",
-    impl = "test_weak_hashtbl.ml",
-    intf = ":test_weak_hashtbl.cmi",
-    ns_module = ":weak_hashtbl_async_test_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_WEAK_HASHTBL_ASYNC_TEST + [
-        ":import.cm_",
-    ],
+    name = "_Test_weak_hashtbl",
+    src = "test_weak_hashtbl.mli",
+    ns_module = ":Weak_hashtbl_async_test_ns",
+    opts = LIB_1_INTERFACE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
 )

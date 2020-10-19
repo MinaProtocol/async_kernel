@@ -1,5 +1,6 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-load("@obazl_rules_ocaml//ocaml:build.bzl", "ppx_executable")
+"## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line."
+
+load("@obazl_rules_ocaml//ocaml:rules.bzl", "ppx_executable")
 
 PPX_EXEC_OPTS = select({
     "//bzl/config:enable_verbose": ["-verbose"],

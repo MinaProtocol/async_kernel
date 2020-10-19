@@ -10,7 +10,7 @@ git_repository(
     # shallow_since = "1592257503 -0500"
 )
 
-load("@obazl_rules_ocaml//ocaml:deps.bzl",
+load("@obazl_rules_ocaml//ocaml:bootstrap.bzl",
      "ocaml_configure",
      "ocaml_register_toolchains",
      "opam_configure")

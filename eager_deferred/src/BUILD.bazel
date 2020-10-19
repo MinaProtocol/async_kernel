@@ -1,199 +1,189 @@
 ## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+## Dune file: /Users/gar/mina/async_kernel/eager_deferred/src/dune
 
 load(
-    "@obazl_rules_ocaml//ocaml:build.bzl",
+    "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
     "ocaml_ns_module",
-    "ppx_executable",
 )
 
-COMMON_OPTS = select({
-    "//bzl/config:enable_verbose": ["-verbose"],
-    "//conditions:default": ["-thread"],
-}) + []
-
-LINK_OPTS = select({
-    "//bzl/config:always_link": ["-linkall"],
-    "//conditions:default": [],
-}) + []
-
-EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-COMMON_DEPS = []
-
-PPX_EXEC_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_IMPL_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_INTF_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_NS_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-PPX_ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS + []
-
-EAGER_DEFERRED_NS = "Eager_deferred"
-
-## (ppx_jane)
-PPX_0 = "//bzl/ppx:ppx[ppx_jane]"
-
-PPX_0_ARGS = [
-    # do not sort (buildifier)
-    "-cookie",
-    "library-name=\"async_kernel\"",
-    "-corrected-suffix",
-    ".ppx-corrected",
-]
-
-ocaml_archive(
-    name = "eager_deferred",
-    opts = ARCHIVE_OPTS,
-    visibility = ["//visibility:public"],
-    deps = [
-        # do not sort (buildifier)
-        ":eager_deferred_ns_module",
-        ":import.cm_",
-        ":eager_deferred.cm_",
-        ":eager_deferred0.cm_",
-        ":eager_deferred_result.cm_",
-        ":eager_deferred_or_error.cm_",
-        ":eager_deferred1.cm_",
-    ],
+## Global Options
+load(
+    "//bzl:config.bzl",
+    "ARCHIVE_OPTS",
+    "GLOBAL_CLI_OPTS",
+    "INTERFACE_OPTS",
+    "MODULE_OPTS",
+    "NS_MODULE_OPTS",
 )
 
-ocaml_ns_module(
-    name = "eager_deferred_ns_module",
-    ns = EAGER_DEFERRED_NS,
-    submodules = [
-        # do not sort (buildifier)
-        "import.ml",
-        "eager_deferred.ml",
-        "eager_deferred0.ml",
-        "eager_deferred_result.ml",
-        "eager_deferred_or_error.ml",
-        "eager_deferred1.ml",
-    ],
-)
+## Repo Options
+load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
 
-COMMON_DEPS_EAGER_DEFERRED = [
+PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
+
+LIB_1_OPTS = []
+
+LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
+
+LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
+
+LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
+
+LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
+
+LIB_1_DEPS = [
     # do not sort (buildifier)
     "@async_kernel//src:async_kernel",
 ]
 
-ocaml_module(
-    name = "import.cm_",
-    impl = "import.ml",
-    ns_module = ":eager_deferred_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
+PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+
+PPX_1_ARGS = [
+    # do not sort (buildifier)
+]
+
+################################################################
+## LIB 1
+################################################################
+ocaml_archive(
+    name = "eager_deferred",
+    opts = LIB_1_ARCHIVE_OPTS,
     visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_EAGER_DEFERRED,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Eager_deferred_ns",
+        ":Eager_deferred",
+        ":Eager_deferred0",
+        ":Eager_deferred1",
+        ":Eager_deferred_or_error",
+        ":Eager_deferred_result",
+        ":Import",
+    ],
 )
 
-ocaml_module(
-    name = "eager_deferred.cm_",
-    impl = "eager_deferred.ml",
-    ns_module = ":eager_deferred_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":eager_deferred1.cm_",
-        ":import.cm_",
+ocaml_ns_module(
+    name = "Eager_deferred_ns",
+    ns = "eager_deferred",
+    opts = LIB_1_NS_MODULE_OPTS,
+    submodules = [
+        # do not sort (buildifier)
+        "eager_deferred.ml",
+        "eager_deferred0.ml",
+        "eager_deferred1.ml",
+        "eager_deferred_or_error.ml",
+        "eager_deferred_result.ml",
+        "import.ml",
     ],
 )
 
 ocaml_module(
-    name = "eager_deferred0.cm_",
-    impl = "eager_deferred0.ml",
-    ns_module = ":eager_deferred_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":import.cm_",
+    name = "Eager_deferred",
+    src = "eager_deferred.ml",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Eager_deferred1",
+        ":Import",
     ],
 )
 
 ocaml_module(
-    name = "eager_deferred_result.cm_",
-    impl = "eager_deferred_result.ml",
-    ns_module = ":eager_deferred_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":eager_deferred0.cm_",
-        ":import.cm_",
+    name = "Eager_deferred0",
+    src = "eager_deferred0.ml",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Import",
+    ],
+)
+
+ocaml_module(
+    name = "Eager_deferred1",
+    src = "eager_deferred1.ml",
+    intf = ":_Eager_deferred1",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Eager_deferred0",
+        ":Eager_deferred_or_error",
+        ":Eager_deferred_result",
     ],
 )
 
 ocaml_interface(
-    name = "eager_deferred_or_error.cmi",
-    intf = "eager_deferred_or_error.mli",
-    ns_module = ":eager_deferred_ns_module",
-    opts = INTF_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:private"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":import.cm_",
+    name = "_Eager_deferred1",
+    src = "eager_deferred1.mli",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_INTERFACE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Eager_deferred_or_error",
+        ":Import",
     ],
 )
 
 ocaml_module(
-    name = "eager_deferred_or_error.cm_",
-    impl = "eager_deferred_or_error.ml",
-    intf = ":eager_deferred_or_error.cmi",
-    ns_module = ":eager_deferred_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":eager_deferred0.cm_",
-        ":eager_deferred_result.cm_",
-        ":import.cm_",
+    name = "Eager_deferred_or_error",
+    src = "eager_deferred_or_error.ml",
+    intf = ":_Eager_deferred_or_error",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Eager_deferred0",
+        ":Eager_deferred_result",
+        ":Import",
     ],
 )
 
 ocaml_interface(
-    name = "eager_deferred1.cmi",
-    intf = "eager_deferred1.mli",
-    ns_module = ":eager_deferred_ns_module",
-    opts = INTF_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:private"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":eager_deferred_or_error.cm_",
-        ":import.cm_",
+    name = "_Eager_deferred_or_error",
+    src = "eager_deferred_or_error.mli",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_INTERFACE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Import",
     ],
 )
 
 ocaml_module(
-    name = "eager_deferred1.cm_",
-    impl = "eager_deferred1.ml",
-    intf = ":eager_deferred1.cmi",
-    ns_module = ":eager_deferred_ns_module",
-    opts = IMPL_OPTS,
-    ppx = PPX_0,
-    ppx_args = PPX_0_ARGS,
-    visibility = ["//visibility:public"],
-    deps = COMMON_DEPS_EAGER_DEFERRED + [
-        ":eager_deferred0.cm_",
-        ":eager_deferred_or_error.cm_",
-        ":eager_deferred_result.cm_",
+    name = "Eager_deferred_result",
+    src = "eager_deferred_result.ml",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
+    deps = LIB_1_DEPS + [
+        # do not sort (buildifier)
+        ":Eager_deferred0",
+        ":Import",
     ],
+)
+
+ocaml_module(
+    name = "Import",
+    src = "import.ml",
+    ns_module = ":Eager_deferred_ns",
+    opts = LIB_1_MODULE_OPTS,
+    ppx = PPX_1,
+    ppx_args = PPX_1_ARGS,
 )
