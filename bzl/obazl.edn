@@ -1,0 +1,53 @@
+;; Obazl tool configuration map
+;; FIXME: one config map per workspace
+{
+ :workspace "async_kernel"
+
+ ;; TODO
+ :overrides {
+             ;; symbol label
+             ;; Digestif "@opam//pkg:digestif.c"
+             }
+ :cc-stuff {
+            }
+ :injected-deps {
+                 ;; these are deps that are injected by ppx, and cannot be handled by the converter
+                 ;; archive_lib {test [":_Processor"]} ;; app/
+                 }
+ :exclusions #{
+               ;; list of dune files to NOT convert automatically
+               }
+ :ns-sep "__"
+ :opam {
+        :pins {
+               ;; ;; will be omitted from @u/local-deps cached list, so deps will be @opam//pkg
+               ;; async_kernel "src/external/async_kernel",
+               ;; base58 "src/external/coda_base58",
+               ;; ;; graphql_ppx "src/external/graphql_ppx"
+               ;; rpc_parallel "src/external/rpc_parallel",
+               ;; ocaml-extlib "src/external/ocaml-extlib",
+               ;; sodium "src/external/ocaml-sodium",
+               }
+        }
+ :ppx {:shared-pkg "//bzl/ppx"
+       :runtime-data {
+                      "../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
+                      "../../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
+                      "../../../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
+                      "../../archive_graphql_schema.json"
+                      {:var GRAPHQL_SCHEMA_JSON :target "//app/archive/archive_lib/graphql_query:json"}
+                    }
+       ;; :overrides {
+       ;;             graphql_query {:libs '[ppx_jane ppx_version graphql_ppx bisect_ppx]
+       ;;                            :args [{:arg "-schema"}
+       ;;                                   {:arg "src/app/archive/archive_graphql_schema.json"}
+       ;;                                   {:arg "--conditional"}]
+       ;;                            }
+       ;;             }
+       }
+ :profiles {
+            :all {:flags [:standard "-short-paths" "-cclib" "-ljemalloc"
+                          "-w" "e@a-4-29-40-41-42-44-45-48-58-59-60"]
+                  :src "src/dune.flags.inc"}
+       }
+ }

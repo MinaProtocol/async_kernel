@@ -1,40 +1,40 @@
 ## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-## Dune file: /Users/gar/mina/async_kernel/src/dune
 
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
-
-## Global Options
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
-    "//bzl:config.bzl",
-    "ARCHIVE_OPTS",
-    "GLOBAL_CLI_OPTS",
-    "INTERFACE_OPTS",
-    "MODULE_OPTS",
-    "NS_MODULE_OPTS",
+    "//:BUILD.bzl",
+    "REPO_ARCHIVE_OPTS",
+    "REPO_INTERFACE_OPTS",
+    "REPO_MODULE_OPTS",
+    "REPO_NS_MODULE_OPTS",
+)
+load(
+    ":BUILD.bzl",
+    "PKG_ARCHIVE_OPTS",
+    "PKG_INTERFACE_OPTS",
+    "PKG_MODULE_OPTS",
+    "PKG_NS_MODULE_OPTS",
 )
 
-## Repo Options
-load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
+################################################################
+## STANZA 1: LIBRARY ASYNC_KERNEL
+################################################################
+ASYNC_KERNEL_ARCHIVE_OPTS = REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
 
-PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
+ASYNC_KERNEL_INTERFACE_OPTS = REPO_INTERFACE_OPTS + PKG_INTERFACE_OPTS
 
-LIB_1_OPTS = []
+ASYNC_KERNEL_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
+ASYNC_KERNEL_NS_MODULE_OPTS = REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
-LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
-
-LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
-
-LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
-
-LIB_1_DEPS = [
+ASYNC_KERNEL_DEPS = [
     # do not sort (buildifier)
     "@opam//pkg:core_kernel",
     "@opam//pkg:core_kernel.moption",
@@ -42,90 +42,89 @@ LIB_1_DEPS = [
     "@opam//pkg:core_kernel.thread_safe_queue",
 ]
 
-PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+ASYNC_KERNEL_PPX = "@//bzl/ppx:ppx.exe[ppx_jane]"
 
-PPX_1_ARGS = [
+ASYNC_KERNEL_PPX_ARGS = [
     # do not sort (buildifier)
-    "-inline-test-lib", "async_kernel",
     "-annotated-ignores",
     "-check-doc-comments",
+    "-inline-test-lib",
+    "async_kernel",
 ]
 
-################################################################
-## LIB 1
-################################################################
+##############
 ocaml_archive(
     name = "async_kernel",
-    opts = LIB_1_ARCHIVE_OPTS,
+    opts = ASYNC_KERNEL_ARCHIVE_OPTS,
     visibility = ["//visibility:public"],
-    deps = LIB_1_DEPS + [
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_kernel_ns",
-        ":Async_condition",
-        ":Async_gc",
-        ":Async_invariant",
-        ":Async_invariant_intf",
-        ":Async_kernel",
-        ":Async_kernel_config",
-        ":Async_quickcheck",
-        ":Async_quickcheck_intf",
-        ":Async_stream",
-        ":Bvar",
-        ":Clock_intf",
-        ":Clock_ns",
-        ":Debug",
-        ":Deferred",
-        ":Deferred0",
-        ":Deferred1",
-        ":Deferred_array",
-        ":Deferred_list",
-        ":Deferred_map",
-        ":Deferred_memo",
-        ":Deferred_option",
-        ":Deferred_or_error",
-        ":Deferred_queue",
-        ":Deferred_result",
-        ":Deferred_sequence",
-        ":Deferred_std",
-        ":Execution_context",
-        ":External_job",
-        ":Import",
-        ":Ivar",
-        ":Ivar0",
-        ":Ivar_filler",
-        ":Job",
-        ":Job_or_event",
-        ":Job_or_event_intf",
-        ":Job_pool",
-        ":Job_queue",
-        ":Lazy_deferred",
-        ":Monad_sequence",
-        ":Monitor",
-        ":Monitor0",
-        ":Mvar",
-        ":Pipe",
-        ":Priority",
-        ":Require_explicit_time_source",
-        ":Scheduler",
-        ":Scheduler0",
-        ":Scheduler1",
-        ":Stack_or_counter",
-        ":Synchronous_time_source",
-        ":Synchronous_time_source0",
-        ":Tail",
-        ":Throttle",
-        ":Time_ns",
-        ":Time_source",
-        ":Time_source_intf",
-        ":Tracing",
-        ":Types",
+        ":_Async_condition",
+        ":_Async_gc",
+        ":_Async_invariant",
+        ":_Async_invariant_intf",
+        ":_Async_kernel",
+        ":_Async_kernel_config",
+        ":_Async_quickcheck",
+        ":_Async_quickcheck_intf",
+        ":_Async_stream",
+        ":_Bvar",
+        ":_Clock_intf",
+        ":_Clock_ns",
+        ":_Debug",
+        ":_Deferred",
+        ":_Deferred0",
+        ":_Deferred1",
+        ":_Deferred_array",
+        ":_Deferred_list",
+        ":_Deferred_map",
+        ":_Deferred_memo",
+        ":_Deferred_option",
+        ":_Deferred_or_error",
+        ":_Deferred_queue",
+        ":_Deferred_result",
+        ":_Deferred_sequence",
+        ":_Deferred_std",
+        ":_Execution_context",
+        ":_External_job",
+        ":_Import",
+        ":_Ivar",
+        ":_Ivar0",
+        ":_Ivar_filler",
+        ":_Job",
+        ":_Job_or_event",
+        ":_Job_or_event_intf",
+        ":_Job_pool",
+        ":_Job_queue",
+        ":_Lazy_deferred",
+        ":_Monad_sequence",
+        ":_Monitor",
+        ":_Monitor0",
+        ":_Mvar",
+        ":_Pipe",
+        ":_Priority",
+        ":_Require_explicit_time_source",
+        ":_Scheduler",
+        ":_Scheduler0",
+        ":_Scheduler1",
+        ":_Stack_or_counter",
+        ":_Synchronous_time_source",
+        ":_Synchronous_time_source0",
+        ":_Tail",
+        ":_Throttle",
+        ":_Time_ns",
+        ":_Time_source",
+        ":_Time_source_intf",
+        ":_Tracing",
+        ":_Types",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Async_kernel_ns",
     ns = "async_kernel",
-    opts = LIB_1_NS_MODULE_OPTS,
+    opts = ASYNC_KERNEL_NS_MODULE_OPTS,
     submodules = [
         # do not sort (buildifier)
         "async_condition.ml",
@@ -189,1586 +188,1756 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_condition",
-    src = "async_condition.ml",
-    intf = ":_Async_condition",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred",
-        ":Ivar",
-    ],
-)
-
-ocaml_interface(
     name = "_Async_condition",
+    src = "async_condition.ml",
+    intf = ":_Async_condition.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred",
+        ":_Ivar",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Async_condition.cmi",
     src = "async_condition.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred",
+        ":_Deferred",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_gc",
-    src = "async_gc.ml",
-    intf = ":_Async_gc",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Scheduler",
-    ],
-)
-
-ocaml_interface(
     name = "_Async_gc",
+    src = "async_gc.ml",
+    intf = ":_Async_gc.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Scheduler",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Async_gc.cmi",
     src = "async_gc.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-    ],
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Async_invariant",
-    src = "async_invariant.ml",
-    intf = ":_Async_invariant",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Async_invariant_intf",
-        ":Deferred",
-        ":Import",
-    ],
-)
-
-ocaml_interface(
     name = "_Async_invariant",
+    src = "async_invariant.ml",
+    intf = ":_Async_invariant.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Async_invariant_intf",
+        ":_Deferred",
+        ":_Import",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Async_invariant.cmi",
     src = "async_invariant.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_invariant_intf",
+        ":_Async_invariant_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_invariant_intf",
+    name = "_Async_invariant_intf",
     src = "async_invariant_intf.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred",
-        ":Import",
+        ":_Deferred",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_kernel",
+    name = "_Async_kernel",
     src = "async_kernel.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_condition",
-        ":Async_gc",
-        ":Async_invariant",
-        ":Async_kernel_config",
-        ":Async_quickcheck",
-        ":Async_stream",
-        ":Bvar",
-        ":Clock_ns",
-        ":Debug",
-        ":Deferred",
-        ":Execution_context",
-        ":Import",
-        ":Ivar",
-        ":Ivar0",
-        ":Ivar_filler",
-        ":Job",
-        ":Lazy_deferred",
-        ":Monad_sequence",
-        ":Monitor",
-        ":Mvar",
-        ":Pipe",
-        ":Priority",
-        ":Require_explicit_time_source",
-        ":Scheduler",
-        ":Stack_or_counter",
-        ":Synchronous_time_source",
-        ":Tail",
-        ":Throttle",
-        ":Time_source",
-        ":Tracing",
+        ":_Async_condition",
+        ":_Async_gc",
+        ":_Async_invariant",
+        ":_Async_kernel_config",
+        ":_Async_quickcheck",
+        ":_Async_stream",
+        ":_Bvar",
+        ":_Clock_ns",
+        ":_Debug",
+        ":_Deferred",
+        ":_Execution_context",
+        ":_Import",
+        ":_Ivar",
+        ":_Ivar0",
+        ":_Ivar_filler",
+        ":_Job",
+        ":_Lazy_deferred",
+        ":_Monad_sequence",
+        ":_Monitor",
+        ":_Mvar",
+        ":_Pipe",
+        ":_Priority",
+        ":_Require_explicit_time_source",
+        ":_Scheduler",
+        ":_Stack_or_counter",
+        ":_Synchronous_time_source",
+        ":_Tail",
+        ":_Throttle",
+        ":_Time_source",
+        ":_Tracing",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_kernel_config",
-    src = "async_kernel_config.ml",
-    intf = ":_Async_kernel_config",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Time_ns",
-    ],
-)
-
-ocaml_interface(
     name = "_Async_kernel_config",
+    src = "async_kernel_config.ml",
+    intf = ":_Async_kernel_config.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Time_ns",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Async_kernel_config.cmi",
     src = "async_kernel_config.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Time_ns",
+        ":_Time_ns",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_quickcheck",
-    src = "async_quickcheck.ml",
-    intf = ":_Async_quickcheck",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred",
-    ],
-)
-
-ocaml_interface(
     name = "_Async_quickcheck",
+    src = "async_quickcheck.ml",
+    intf = ":_Async_quickcheck.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Async_quickcheck.cmi",
     src = "async_quickcheck.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_quickcheck_intf",
+        ":_Async_quickcheck_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_quickcheck_intf",
+    name = "_Async_quickcheck_intf",
     src = "async_quickcheck_intf.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred",
+        ":_Deferred",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Async_stream",
-    src = "async_stream.ml",
-    intf = ":_Async_stream",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-        ":Ivar",
-        ":Monitor",
-        ":Tail",
-    ],
-)
-
-ocaml_interface(
     name = "_Async_stream",
+    src = "async_stream.ml",
+    intf = ":_Async_stream.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Ivar",
+        ":_Monitor",
+        ":_Tail",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Async_stream.cmi",
     src = "async_stream.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Import",
-        ":Tail",
+        ":_Deferred1",
+        ":_Import",
+        ":_Tail",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Bvar",
-    src = "bvar.ml",
-    intf = ":_Bvar",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-        ":Ivar",
-        ":Scheduler1",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Bvar",
+    src = "bvar.ml",
+    intf = ":_Bvar.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+        ":_Ivar",
+        ":_Scheduler1",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Bvar.cmi",
     src = "bvar.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred0",
-        ":Import",
-        ":Types",
+        ":_Deferred0",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Clock_intf",
+    name = "_Clock_intf",
     src = "clock_intf.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    ppx_output_format = "text",
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_stream",
-        ":Deferred1",
-        ":Ivar",
-        ":Time_source",
+        ":_Async_stream",
+        ":_Deferred1",
+        ":_Ivar",
+        ":_Time_source",
+        # without this we get impl/intf mismatch err for clock_ns
+        # this can also be added as a dep of time_source.ml
+        ":_Time_source_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Clock_ns",
-    src = "clock_ns.ml",
-    intf = ":_Clock_ns",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Clock_intf",
-        ":Import",
-        ":Scheduler1",
-        ":Time_source",
-        # ":Time_source_intf",
-    ],
-)
-
-ocaml_interface(
     name = "_Clock_ns",
+    src = "clock_ns.ml",
+    intf = ":_Clock_ns.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    ppx_output_format = "text",
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        # ":_Clock_intf",
+        ":_Import",
+        ":_Scheduler1",
+        # ":_Time_source",
+        # ":_Time_source_intf",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Clock_ns.cmi",
     src = "clock_ns.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    ppx_output_format = "text",
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Clock_intf",
-        ":Import",
-        ":Time_ns",
+        ":_Clock_intf",
+        ":_Import",
+        # ":_Time_ns",
+        # ":_Time_source",
+        # ":_Time_source_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Debug",
-    src = "debug.ml",
-    intf = ":_Debug",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Async_kernel_config",
-        ":Time_ns",
-    ],
-)
-
-ocaml_interface(
     name = "_Debug",
+    src = "debug.ml",
+    intf = ":_Debug.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Async_kernel_config",
+        ":_Time_ns",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Debug.cmi",
     src = "debug.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_kernel_config",
+        ":_Async_kernel_config",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred",
-    src = "deferred.ml",
-    intf = ":_Deferred",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_array",
-        ":Deferred_list",
-        ":Deferred_map",
-        ":Deferred_memo",
-        ":Deferred_option",
-        ":Deferred_or_error",
-        ":Deferred_queue",
-        ":Deferred_result",
-        ":Deferred_sequence",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred",
+    src = "deferred.ml",
+    intf = ":_Deferred.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_array",
+        ":_Deferred_list",
+        ":_Deferred_map",
+        ":_Deferred_memo",
+        ":_Deferred_option",
+        ":_Deferred_or_error",
+        ":_Deferred_queue",
+        ":_Deferred_result",
+        ":_Deferred_sequence",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred.cmi",
     src = "deferred.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_array",
-        ":Deferred_list",
-        ":Deferred_map",
-        ":Deferred_memo",
-        ":Deferred_option",
-        ":Deferred_or_error",
-        ":Deferred_queue",
-        ":Deferred_result",
-        ":Deferred_sequence",
-        ":Import",
-        ":Ivar",
+        ":_Deferred1",
+        ":_Deferred_array",
+        ":_Deferred_list",
+        ":_Deferred_map",
+        ":_Deferred_memo",
+        ":_Deferred_option",
+        ":_Deferred_or_error",
+        ":_Deferred_queue",
+        ":_Deferred_result",
+        ":_Deferred_sequence",
+        ":_Import",
+        ":_Ivar",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred0",
-    src = "deferred0.ml",
-    intf = ":_Deferred0",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-        ":Ivar0",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred0",
+    src = "deferred0.ml",
+    intf = ":_Deferred0.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+        ":_Ivar0",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred0.cmi",
     src = "deferred0.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        ":Ivar0",
-        ":Types",
+        ":_Execution_context",
+        ":_Import",
+        ":_Ivar0",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred1",
+    name = "_Deferred1",
     src = "deferred1.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred0",
-        ":Ivar",
-        ":Monad_sequence",
-        ":Scheduler1",
+        ":_Deferred0",
+        ":_Ivar",
+        ":_Monad_sequence",
+        ":_Scheduler1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_array",
-    src = "deferred_array.ml",
-    intf = ":_Deferred_array",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-        ":Ivar",
-        ":Throttle",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_array",
+    src = "deferred_array.ml",
+    intf = ":_Deferred_array.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Ivar",
+        ":_Throttle",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_array.cmi",
     src = "deferred_array.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
+        ":_Deferred1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_list",
-    src = "deferred_list.ml",
-    intf = ":_Deferred_list",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-        ":Ivar",
-        ":Throttle",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_list",
+    src = "deferred_list.ml",
+    intf = ":_Deferred_list.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Ivar",
+        ":_Throttle",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_list.cmi",
     src = "deferred_list.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
+        ":_Deferred1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_map",
-    src = "deferred_map.ml",
-    intf = ":_Deferred_map",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_list",
-        ":Deferred_std",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_map",
+    src = "deferred_map.ml",
+    intf = ":_Deferred_map.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_list",
+        ":_Deferred_std",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_map.cmi",
     src = "deferred_map.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Monad_sequence",
+        ":_Deferred1",
+        ":_Monad_sequence",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_memo",
-    src = "deferred_memo.ml",
-    intf = ":_Deferred_memo",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-        ":Monitor",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_memo",
+    src = "deferred_memo.ml",
+    intf = ":_Deferred_memo.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Monitor",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_memo.cmi",
     src = "deferred_memo.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Import",
+        ":_Deferred1",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_option",
-    src = "deferred_option.ml",
-    intf = ":_Deferred_option",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_option",
+    src = "deferred_option.ml",
+    intf = ":_Deferred_option.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_option.cmi",
     src = "deferred_option.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred0",
+        ":_Deferred0",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_or_error",
-    src = "deferred_or_error.ml",
-    intf = ":_Deferred_or_error",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_result",
-        ":Import",
-        ":Monitor",
-        ":Throttle",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_or_error",
+    src = "deferred_or_error.ml",
+    intf = ":_Deferred_or_error.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_result",
+        ":_Import",
+        ":_Monitor",
+        ":_Throttle",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_or_error.cmi",
     src = "deferred_or_error.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Import",
-        ":Monad_sequence",
+        ":_Deferred1",
+        ":_Import",
+        ":_Monad_sequence",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_queue",
-    src = "deferred_queue.ml",
-    intf = ":_Deferred_queue",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred_list",
-        ":Deferred_std",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_queue",
+    src = "deferred_queue.ml",
+    intf = ":_Deferred_queue.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred_list",
+        ":_Deferred_std",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_queue.cmi",
     src = "deferred_queue.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
+        ":_Deferred1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_result",
-    src = "deferred_result.ml",
-    intf = ":_Deferred_result",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_result",
+    src = "deferred_result.ml",
+    intf = ":_Deferred_result.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_std",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_result.cmi",
     src = "deferred_result.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
+        ":_Deferred1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_sequence",
-    src = "deferred_sequence.ml",
-    intf = ":_Deferred_sequence",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-        ":Throttle",
-    ],
-)
-
-ocaml_interface(
     name = "_Deferred_sequence",
+    src = "deferred_sequence.ml",
+    intf = ":_Deferred_sequence.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Throttle",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Deferred_sequence.cmi",
     src = "deferred_sequence.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
+        ":_Deferred1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Deferred_std",
+    name = "_Deferred_std",
     src = "deferred_std.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
+        ":_Deferred1",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Execution_context",
-    src = "execution_context.ml",
-    intf = ":_Execution_context",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-        ":Monitor0",
-        ":Priority",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Execution_context",
+    src = "execution_context.ml",
+    intf = ":_Execution_context.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+        ":_Monitor0",
+        ":_Priority",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Execution_context.cmi",
     src = "execution_context.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
-        ":Monitor0",
-        ":Priority",
-        ":Types",
+        ":_Import",
+        ":_Monitor0",
+        ":_Priority",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "External_job",
-    src = "external_job.ml",
-    intf = ":_External_job",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_External_job",
+    src = "external_job.ml",
+    intf = ":_External_job.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_External_job.cmi",
     src = "external_job.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        ":Types",
+        ":_Execution_context",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Import",
+    name = "_Import",
     src = "import.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_kernel_config",
-        ":Debug",
-        ":Time_ns",
+        ":_Async_kernel_config",
+        ":_Debug",
+        ":_Time_ns",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Ivar",
-    src = "ivar.ml",
-    intf = ":_Ivar",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred0",
-        ":Ivar0",
-    ],
-)
-
-ocaml_interface(
     name = "_Ivar",
+    src = "ivar.ml",
+    intf = ":_Ivar.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred0",
+        ":_Ivar0",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Ivar.cmi",
     src = "ivar.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred0",
-        ":Import",
-        ":Types",
+        ":_Deferred0",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Ivar0",
-    src = "ivar0.ml",
-    intf = ":_Ivar0",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        ":Scheduler1",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Ivar0",
+    src = "ivar0.ml",
+    intf = ":_Ivar0.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Execution_context",
+        ":_Import",
+        ":_Scheduler1",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Ivar0.cmi",
     src = "ivar0.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        ":Types",
+        ":_Execution_context",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Ivar_filler",
-    src = "ivar_filler.ml",
-    intf = ":_Ivar_filler",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-        ":Ivar",
-    ],
-)
-
-ocaml_interface(
     name = "_Ivar_filler",
+    src = "ivar_filler.ml",
+    intf = ":_Ivar_filler.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+        ":_Ivar",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Ivar_filler.cmi",
     src = "ivar_filler.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred0",
-        ":Import",
+        ":_Deferred0",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Job",
-    src = "job.ml",
-    intf = ":_Job",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-        ":Job_pool",
-    ],
-)
-
-ocaml_interface(
     name = "_Job",
+    src = "job.ml",
+    intf = ":_Job.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+        ":_Job_pool",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Job.cmi",
     src = "job.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
-        ":Types",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Job_or_event",
-    src = "job_or_event.ml",
-    intf = ":_Job_or_event",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        # ":Job_or_event",
-        ":Time_ns",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Job_or_event",
+    src = "job_or_event.ml",
+    intf = ":_Job_or_event.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Execution_context",
+        ":_Import",
+        ":_Time_ns",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Job_or_event.cmi",
     src = "job_or_event.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Job_or_event_intf",
+        ":_Job_or_event_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Job_or_event_intf",
+    name = "_Job_or_event_intf",
     src = "job_or_event_intf.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
-        ":Job",
-        ":Types",
+        ":_Import",
+        ":_Job",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Job_pool",
-    src = "job_pool.ml",
-    intf = ":_Job_pool",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-    ],
-)
-
-ocaml_interface(
     name = "_Job_pool",
+    src = "job_pool.ml",
+    intf = ":_Job_pool.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Execution_context",
+        ":_Import",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Job_pool.cmi",
     src = "job_pool.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
+        ":_Execution_context",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Job_queue",
-    src = "job_queue.ml",
-    intf = ":_Job_queue",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Execution_context",
-        ":External_job",
-        ":Import",
-        ":Scheduler0",
-        ":Time_ns",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Job_queue",
+    src = "job_queue.ml",
+    intf = ":_Job_queue.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Execution_context",
+        ":_External_job",
+        ":_Import",
+        ":_Scheduler0",
+        ":_Time_ns",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Job_queue.cmi",
     src = "job_queue.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        ":Scheduler0",
-        ":Types",
+        ":_Execution_context",
+        ":_Import",
+        ":_Scheduler0",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Lazy_deferred",
-    src = "lazy_deferred.ml",
-    intf = ":_Lazy_deferred",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred",
-        ":Deferred_std",
-        ":Ivar",
-    ],
-)
-
-ocaml_interface(
     name = "_Lazy_deferred",
+    src = "lazy_deferred.ml",
+    intf = ":_Lazy_deferred.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred",
+        ":_Deferred_std",
+        ":_Ivar",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Lazy_deferred.cmi",
     src = "lazy_deferred.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred",
+        ":_Deferred",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Monad_sequence",
+    name = "_Monad_sequence",
     src = "monad_sequence.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Monitor",
-    src = "monitor.ml",
-    intf = ":_Monitor",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Async_kernel_config",
-        ":Debug",
-        ":Deferred1",
-        ":Deferred_std",
-        ":Execution_context",
-        ":Import",
-        ":Ivar",
-        ":Ivar_filler",
-        ":Monitor0",
-        ":Priority",
-        ":Scheduler1",
-        ":Tail",
-    ],
-)
-
-ocaml_interface(
     name = "_Monitor",
+    src = "monitor.ml",
+    intf = ":_Monitor.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Async_kernel_config",
+        ":_Debug",
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Execution_context",
+        ":_Import",
+        ":_Ivar",
+        ":_Ivar_filler",
+        ":_Monitor0",
+        ":_Priority",
+        ":_Scheduler1",
+        ":_Tail",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Monitor.cmi",
     src = "monitor.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Execution_context",
-        ":Monitor0",
-        ":Priority",
-        ":Tail",
+        ":_Deferred1",
+        ":_Execution_context",
+        ":_Monitor0",
+        ":_Priority",
+        ":_Tail",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Monitor0",
+    name = "_Monitor0",
     src = "monitor0.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Debug",
-        ":Import",
-        ":Types",
+        ":_Debug",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Mvar",
-    src = "mvar.ml",
-    intf = ":_Mvar",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Bvar",
-        ":Deferred_std",
-        ":Import",
-        ":Ivar",
-        ":Pipe",
-    ],
-)
-
-ocaml_interface(
     name = "_Mvar",
+    src = "mvar.ml",
+    intf = ":_Mvar.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Bvar",
+        ":_Deferred_std",
+        ":_Import",
+        ":_Ivar",
+        ":_Pipe",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Mvar.cmi",
     src = "mvar.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred",
-        ":Import",
-        ":Pipe",
+        ":_Deferred",
+        ":_Import",
+        ":_Pipe",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Pipe",
-    src = "pipe.ml",
-    intf = ":_Pipe",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Async_stream",
-        ":Deferred",
-        ":Deferred_std",
-        ":Import",
-        ":Ivar",
-        ":Monitor",
-        ":Tail",
-    ],
-)
-
-ocaml_interface(
     name = "_Pipe",
+    src = "pipe.ml",
+    intf = ":_Pipe.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Async_stream",
+        ":_Deferred",
+        ":_Deferred_std",
+        ":_Import",
+        ":_Ivar",
+        ":_Monitor",
+        ":_Tail",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Pipe.cmi",
     src = "pipe.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_stream",
-        ":Deferred",
+        ":_Async_stream",
+        ":_Deferred",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Priority",
-    src = "priority.ml",
-    intf = ":_Priority",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Import",
-    ],
-)
-
-ocaml_interface(
     name = "_Priority",
+    src = "priority.ml",
+    intf = ":_Priority.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Import",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Priority.cmi",
     src = "priority.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Require_explicit_time_source",
-    src = "require_explicit_time_source.ml",
-    intf = ":_Require_explicit_time_source",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Clock_ns",
-        ":Import",
-        ":Scheduler",
-        ":Time_ns",
-    ],
-)
-
-ocaml_interface(
     name = "_Require_explicit_time_source",
+    src = "require_explicit_time_source.ml",
+    intf = ":_Require_explicit_time_source.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Clock_ns",
+        ":_Import",
+        ":_Scheduler",
+        ":_Time_ns",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Require_explicit_time_source.cmi",
     src = "require_explicit_time_source.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Clock_intf",
-        ":Deferred",
-        ":Import",
-        ":Scheduler",
-        ":Time_ns",
+        ":_Clock_intf",
+        ":_Deferred",
+        ":_Import",
+        ":_Scheduler",
+        ":_Time_ns",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Scheduler",
-    src = "scheduler.ml",
-    intf = ":_Scheduler",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Async_stream",
-        ":Bvar",
-        ":Debug",
-        ":Deferred1",
-        ":Deferred_std",
-        ":Execution_context",
-        ":External_job",
-        ":Import",
-        ":Job_queue",
-        ":Monitor",
-        ":Scheduler1",
-        ":Synchronous_time_source0",
-        ":Tail",
-        ":Time_ns",
-    ],
-)
-
-ocaml_interface(
     name = "_Scheduler",
+    src = "scheduler.ml",
+    intf = ":_Scheduler.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Async_stream",
+        ":_Bvar",
+        ":_Debug",
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Execution_context",
+        ":_External_job",
+        ":_Import",
+        ":_Job_queue",
+        ":_Monitor",
+        ":_Scheduler1",
+        ":_Synchronous_time_source0",
+        ":_Tail",
+        ":_Time_ns",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Scheduler.cmi",
     src = "scheduler.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_stream",
-        ":Deferred1",
-        ":Execution_context",
-        ":Import",
-        ":Job",
-        ":Monitor",
-        ":Priority",
-        ":Time_ns",
-        ":Types",
+        ":_Async_stream",
+        ":_Deferred1",
+        ":_Execution_context",
+        ":_Import",
+        ":_Job",
+        ":_Monitor",
+        ":_Priority",
+        ":_Time_ns",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Scheduler0",
+    name = "_Scheduler0",
     src = "scheduler0.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
-        ":Tracing",
-        ":Types",
+        ":_Import",
+        ":_Tracing",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Scheduler1",
+    name = "_Scheduler1",
     src = "scheduler1.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_kernel_config",
-        ":Debug",
-        ":Execution_context",
-        ":External_job",
-        ":Import",
-        ":Job_pool",
-        ":Job_queue",
-        ":Priority",
-        ":Scheduler0",
-        ":Synchronous_time_source0",
-        ":Time_ns",
-        ":Types",
+        ":_Async_kernel_config",
+        ":_Debug",
+        ":_Execution_context",
+        ":_External_job",
+        ":_Import",
+        ":_Job_pool",
+        ":_Job_queue",
+        ":_Priority",
+        ":_Scheduler0",
+        ":_Synchronous_time_source0",
+        ":_Time_ns",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Stack_or_counter",
-    src = "stack_or_counter.ml",
-    intf = ":_Stack_or_counter",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-    ],
-)
-
-ocaml_interface(
     name = "_Stack_or_counter",
+    src = "stack_or_counter.ml",
+    intf = ":_Stack_or_counter.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS,
+)
+
+################
+ocaml_interface(
+    name = "_Stack_or_counter.cmi",
     src = "stack_or_counter.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-    ],
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Synchronous_time_source",
-    src = "synchronous_time_source.ml",
-    intf = ":_Synchronous_time_source",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Scheduler1",
-        ":Synchronous_time_source0",
-    ],
-)
-
-ocaml_interface(
     name = "_Synchronous_time_source",
+    src = "synchronous_time_source.ml",
+    intf = ":_Synchronous_time_source.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Scheduler1",
+        ":_Synchronous_time_source0",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Synchronous_time_source.cmi",
     src = "synchronous_time_source.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
-        ":Job",
-        ":Time_ns",
-        ":Types",
+        ":_Import",
+        ":_Job",
+        ":_Time_ns",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Synchronous_time_source0",
+    name = "_Synchronous_time_source0",
     src = "synchronous_time_source0.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
-        ":Import",
-        ":Job",
-        ":Job_or_event_intf",
-        ":Job_or_event",
-        ":Monitor0",
-        ":Scheduler0",
-        ":Time_ns",
-        ":Types",
+        ":_Execution_context",
+        ":_Import",
+        ":_Job",
+        ":_Job_or_event",
+        ":_Job_or_event_intf",  # obazl:retain
+        ":_Monitor0",
+        ":_Scheduler0",
+        ":_Time_ns",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Tail",
-    src = "tail.ml",
-    intf = ":_Tail",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Import",
-        ":Ivar",
-        ":Types",
-    ],
-)
-
-ocaml_interface(
     name = "_Tail",
+    src = "tail.ml",
+    intf = ":_Tail.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Import",
+        ":_Ivar",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Tail.cmi",
     src = "tail.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Import",
-        ":Types",
+        ":_Deferred1",
+        ":_Import",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Throttle",
-    src = "throttle.ml",
-    intf = ":_Throttle",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Deferred1",
-        ":Deferred_std",
-        ":Import",
-        ":Ivar",
-        ":Monitor",
-        ":Stack_or_counter",
-    ],
-)
-
-ocaml_interface(
     name = "_Throttle",
-    src = "throttle.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    src = "throttle.ml",
+    intf = ":_Throttle.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Deferred1",
-        ":Monad_sequence",
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Import",
+        ":_Ivar",
+        ":_Monitor",
+        ":_Stack_or_counter",
     ],
 )
 
-ocaml_module(
-    name = "Time_ns",
-    src = "time_ns.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-    ],
-)
-
-ocaml_module(
-    name = "Time_source",
-    src = "time_source.ml",
-    intf = ":_Time_source",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Bvar",
-        ":Debug",
-        ":Deferred1",
-        ":Deferred_std",
-        ":Import",
-        ":Ivar",
-        ":Job_or_event",
-        ":Monitor",
-        ":Scheduler1",
-        ":Synchronous_time_source",
-        ":Synchronous_time_source0",
-        ":Tail",
-        ":Time_ns",
-        ":Time_source_intf",
-    ],
-)
-
+################
 ocaml_interface(
+    name = "_Throttle.cmi",
+    src = "throttle.mli",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Deferred1",
+        ":_Monad_sequence",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Time_ns",
+    src = "time_ns.ml",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS,
+)
+
+#############
+ocaml_module(
     name = "_Time_source",
+    src = "time_source.ml",
+    intf = ":_Time_source.cmi",
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
+        # do not sort (buildifier)
+        ":_Bvar",
+        ":_Debug",
+        ":_Deferred1",
+        ":_Deferred_std",
+        ":_Import",
+        ":_Ivar",
+        ":_Job_or_event",
+        ":_Monitor",
+        ":_Scheduler1",
+        ":_Synchronous_time_source",
+        ":_Synchronous_time_source0",
+        ":_Tail",
+        ":_Time_ns",
+        # ":_Time_source_intf",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Time_source.cmi",
     src = "time_source.mli",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_INTERFACE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Time_source_intf",
+        ":_Time_source_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Time_source_intf",
+    name = "_Time_source_intf",
     src = "time_source_intf.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Async_stream",
-        ":Deferred1",
-        ":Import",
-        ":Ivar",
-        ":Job",
-        ":Synchronous_time_source",
-        ":Time_ns",
+        ":_Async_stream",
+        ":_Deferred1",
+        ":_Import",
+        ":_Ivar",
+        ":_Job",
+        ":_Synchronous_time_source",
+        ":_Time_ns",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Tracing",
+    name = "_Tracing",
     src = "tracing.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Execution_context",
+        ":_Execution_context",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Types",
+    name = "_Types",
     src = "types.ml",
-    ns_module = ":Async_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Async_kernel_ns",
+    opts = ASYNC_KERNEL_MODULE_OPTS,
+    ppx = ASYNC_KERNEL_PPX,
+    ppx_args = ASYNC_KERNEL_PPX_ARGS,
+    deps = ASYNC_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Import",
-        ":Priority",
-        ":Time_ns",
+        ":_Import",
+        ":_Priority",
+        ":_Time_ns",
     ],
+)
+
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
+
+bool_flag(
+    name = "debug",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_debug",
+    flag_values = {":debug": str(True)},
+)
+
+bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
+    name = "verbose",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_verbose",
+    flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
 )

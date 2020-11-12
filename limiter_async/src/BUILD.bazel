@@ -41,7 +41,7 @@ LIB_1_DEPS = [
     "@async_kernel//src:async_kernel",
 ]
 
-PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+PPX_1 = "@//bzl/ppx:ppx.exe[ppx_jane]"
 
 PPX_1_ARGS = [
     # do not sort (buildifier)
