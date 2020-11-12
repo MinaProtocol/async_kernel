@@ -1,5 +1,4 @@
 ## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-## Dune file: /Users/gar/mina/async_kernel/eager_deferred/src/dune
 
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
