@@ -92,6 +92,12 @@ val get_next_error : t -> exn Deferred.t
     backtrace from the error (see discussion in [try_with]). *)
 val extract_exn : exn -> exn
 
+(** [exn_to_error] extracts the exn from an error exn that comes from a monitor,
+    repackaging it into an [Error.t]. If it is not supplied such an error exn, the
+    backtrace is inferred and the exn is packaged as given.
+*)
+val exn_to_error : exn -> Error.t
+
 (** [has_seen_error t] returns true iff the monitor has ever seen an error. *)
 val has_seen_error : t -> bool
 

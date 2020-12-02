@@ -243,6 +243,20 @@ let send_exn t ?backtrace exn =
   loop t
 ;;
 
+let exn_to_error exn =
+  match exn with
+  | Error_ {exn; backtrace; _} ->
+    let backtrace =
+      match backtrace with
+      | Some backtrace -> `This (Backtrace.to_string backtrace)
+      | None -> `Get
+    in
+    Error.tag ~tag:"monitor.ml.Error"
+      (Error.of_exn ~backtrace exn)
+  | exn ->
+    Error.of_exn ~backtrace:`Get exn
+;;
+
 module Exported_for_scheduler = struct
   let within_context context f =
     Scheduler.(with_execution_context (t ())) context ~f:(fun () ->
