@@ -29,14 +29,12 @@
                ;; sodium "src/external/ocaml-sodium",
                }
         }
- :ppx {:shared-pkg "//bzl/ppx"
-       :runtime-data {
-                      "../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
-                      "../../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
-                      "../../../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
-                      "../../archive_graphql_schema.json"
-                      {:var GRAPHQL_SCHEMA_JSON :target "//app/archive/archive_lib/graphql_query:json"}
-                    }
+ :ppx {:shared-pkg "//bzl/ppx/exe"
+       ;; :runtime-data {
+       ;;                "../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
+       ;;                "../../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
+       ;;                "../../../../config.mlh" {:var CONFIG_MLH :target "//src:prod"}
+       ;;              }
        ;; :overrides {
        ;;             graphql_query {:libs '[ppx_jane ppx_version graphql_ppx bisect_ppx]
        ;;                            :args [{:arg "-schema"}

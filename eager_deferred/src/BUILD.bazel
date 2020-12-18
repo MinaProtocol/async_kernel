@@ -5,68 +5,50 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
-## Global Options
-load(
-    "//bzl:config.bzl",
-    "ARCHIVE_OPTS",
-    "GLOBAL_CLI_OPTS",
-    "INTERFACE_OPTS",
-    "MODULE_OPTS",
-    "NS_MODULE_OPTS",
-)
+################################################################
+## STANZA 1: LIBRARY EAGER_DEFERRED
+################################################################
+EAGER_DEFERRED_INTERFACE_OPTS = []
 
-## Repo Options
-load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
+EAGER_DEFERRED_MODULE_OPTS = []
 
-PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
-
-LIB_1_OPTS = []
-
-LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
-
-LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
-
-LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
-
-LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
-
-LIB_1_DEPS = [
+EAGER_DEFERRED_DEPS = [
     # do not sort (buildifier)
     "@async_kernel//src:async_kernel",
 ]
 
-PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+EAGER_DEFERRED_PPX = "@//bzl/ppx/exe:ppx_jane"
 
-PPX_1_ARGS = [
+EAGER_DEFERRED_PPX_ARGS = [
     # do not sort (buildifier)
+    "-inline-test-lib",
+    "eager_deferred",
 ]
 
-################################################################
-## LIB 1
-################################################################
+##############
 ocaml_archive(
     name = "eager_deferred",
-    opts = LIB_1_ARCHIVE_OPTS,
+    opts = [],
     visibility = ["//visibility:public"],
-    deps = LIB_1_DEPS + [
+    deps = EAGER_DEFERRED_DEPS + [
         # do not sort (buildifier)
-        ":Eager_deferred_ns",
-        ":Eager_deferred",
-        ":Eager_deferred0",
-        ":Eager_deferred1",
-        ":Eager_deferred_or_error",
-        ":Eager_deferred_result",
-        ":Import",
+        ":_Eager_deferred",
+        ":_Eager_deferred0",
+        ":_Eager_deferred1",
+        ":_Eager_deferred_or_error",
+        ":_Eager_deferred_result",
+        ":_Import",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Eager_deferred_ns",
     ns = "eager_deferred",
-    opts = LIB_1_NS_MODULE_OPTS,
+    opts = [],
     submodules = [
         # do not sort (buildifier)
         "eager_deferred.ml",
@@ -78,111 +60,120 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Eager_deferred",
+    name = "_Eager_deferred",
     src = "eager_deferred.ml",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_MODULE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
         # do not sort (buildifier)
-        ":Eager_deferred1",
-        ":Import",
+        ":_Eager_deferred1",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Eager_deferred0",
+    name = "_Eager_deferred0",
     src = "eager_deferred0.ml",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_MODULE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
         # do not sort (buildifier)
-        ":Import",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Eager_deferred1",
-    src = "eager_deferred1.ml",
-    intf = ":_Eager_deferred1",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Eager_deferred0",
-        ":Eager_deferred_or_error",
-        ":Eager_deferred_result",
-    ],
-)
-
-ocaml_interface(
     name = "_Eager_deferred1",
-    src = "eager_deferred1.mli",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    src = "eager_deferred1.ml",
+    intf = ":_Eager_deferred1.cmi",
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_MODULE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
         # do not sort (buildifier)
-        ":Eager_deferred_or_error",
-        ":Import",
+        ":_Eager_deferred0",
+        ":_Eager_deferred_or_error",
+        ":_Eager_deferred_result",
     ],
 )
 
-ocaml_module(
-    name = "Eager_deferred_or_error",
-    src = "eager_deferred_or_error.ml",
-    intf = ":_Eager_deferred_or_error",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Eager_deferred0",
-        ":Eager_deferred_result",
-        ":Import",
-    ],
-)
-
+################
 ocaml_interface(
+    name = "_Eager_deferred1.cmi",
+    src = "eager_deferred1.mli",
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_INTERFACE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
+        # do not sort (buildifier)
+        ":_Eager_deferred_or_error",
+        ":_Import",
+    ],
+)
+
+#############
+ocaml_module(
     name = "_Eager_deferred_or_error",
+    src = "eager_deferred_or_error.ml",
+    intf = ":_Eager_deferred_or_error.cmi",
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_MODULE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
+        # do not sort (buildifier)
+        ":_Eager_deferred0",
+        ":_Eager_deferred_result",
+        ":_Import",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Eager_deferred_or_error.cmi",
     src = "eager_deferred_or_error.mli",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_INTERFACE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
         # do not sort (buildifier)
-        ":Import",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Eager_deferred_result",
+    name = "_Eager_deferred_result",
     src = "eager_deferred_result.ml",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_MODULE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS + [
         # do not sort (buildifier)
-        ":Eager_deferred0",
-        ":Import",
+        ":_Eager_deferred0",
+        ":_Import",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Import",
+    name = "_Import",
     src = "import.ml",
-    ns_module = ":Eager_deferred_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
+    ns = ":Eager_deferred_ns",
+    opts = EAGER_DEFERRED_MODULE_OPTS,
+    ppx = EAGER_DEFERRED_PPX,
+    ppx_args = EAGER_DEFERRED_PPX_ARGS,
+    deps = EAGER_DEFERRED_DEPS,
 )

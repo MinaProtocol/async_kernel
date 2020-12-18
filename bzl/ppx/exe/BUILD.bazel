@@ -1,0 +1,51 @@
+load("@obazl_rules_ocaml//ocaml:rules.bzl", "ppx_executable", "ppx_module")
+
+###############
+ppx_executable(
+    name = "ppx_jane",
+    lazy_deps = [
+        "@opam//pkg:ppx_expect.collector",
+        "@opam//pkg:ppx_hash.runtime-lib",
+        "@opam//pkg:ppx_sexp_conv.runtime-lib",
+        "@opam//pkg:ppx_assert.runtime-lib",
+        "@opam//pkg:ppx_compare.runtime-lib",
+        "@opam//pkg:ppx_inline_test.runtime-lib",
+        "@opam//pkg:ppx_bench.runtime-lib",
+        "@opam//pkg:ppx_enumerate.runtime-lib",
+        "@opam//pkg:ppx_module_timer.runtime",
+    ],
+    main = ":Driver",
+    opts = [],
+    visibility = [
+        "//eager_deferred/src:__pkg__",
+        "//limiter_async/src:__pkg__",
+        "//limiter_async/test:__pkg__",
+        "//persistent_connection_kernel/src:__pkg__",
+        "//src:__pkg__",
+        "//weak_hashtbl_async/src:__pkg__",
+        "//weak_hashtbl_async/test:__pkg__",
+    ],
+    deps = [
+        "@opam//pkg:ppx_jane",
+        "@opam//pkg:ppxlib",
+    ],
+)
+
+################################################################
+################################################################
+ppx_module(
+    name = "Driver",
+    src = ":ppxlib_driver.ml",
+    visibility = ["//visibility:public"],
+    deps = ["@opam//pkg:ppxlib"],
+)
+
+########
+genrule(
+    name = "gendriver",
+    outs = ["ppxlib_driver.ml"],
+    cmd = "\n".join([
+        "echo \"(* GENERATED FILE - DO NOT EDIT *)\" > \"$@\"",
+        "echo \"let () = Ppxlib.Driver.standalone ()\" >> \"$@\"",
+    ]),
+)

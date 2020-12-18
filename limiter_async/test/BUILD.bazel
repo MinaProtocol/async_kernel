@@ -5,89 +5,71 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
-## Global Options
-load(
-    "//bzl:config.bzl",
-    "ARCHIVE_OPTS",
-    "GLOBAL_CLI_OPTS",
-    "INTERFACE_OPTS",
-    "MODULE_OPTS",
-    "NS_MODULE_OPTS",
-)
+################################################################
+## STANZA 1: LIBRARY LIMITER_ASYNC_TEST
+################################################################
+LIMITER_ASYNC_TEST_INTERFACE_OPTS = []
 
-## Repo Options
-load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
+LIMITER_ASYNC_TEST_MODULE_OPTS = []
 
-PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
-
-LIB_1_OPTS = []
-
-LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
-
-LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
-
-LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
-
-LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
-
-LIB_1_DEPS = [
+LIMITER_ASYNC_TEST_DEPS = [
     # do not sort (buildifier)
     "@opam//pkg:expect_test_helpers",
     "@async_kernel//limiter_async/src:limiter_async",
 ]
 
-PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+LIMITER_ASYNC_TEST_PPX = "@//bzl/ppx/exe:ppx_jane"
 
-PPX_1_ARGS = [
+LIMITER_ASYNC_TEST_PPX_ARGS = [
     # do not sort (buildifier)
-    "-inline-test-lib", "async_kernel"
+    "-inline-test-lib",
+    "limiter_async_test",
 ]
 
-################################################################
-## LIB 1
-################################################################
+##############
 ocaml_archive(
     name = "limiter_async_test",
-    opts = LIB_1_ARCHIVE_OPTS,
+    opts = [],
     visibility = ["//visibility:public"],
-    deps = LIB_1_DEPS + [
+    deps = LIMITER_ASYNC_TEST_DEPS + [
         # do not sort (buildifier)
-        ":Limiter_async_test_ns",
-        ":Test_limiter_async",
+        ":_Test_limiter_async",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Limiter_async_test_ns",
     ns = "limiter_async_test",
-    opts = LIB_1_NS_MODULE_OPTS,
+    opts = [],
     submodules = [
         # do not sort (buildifier)
         "test_limiter_async.ml",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Test_limiter_async",
+    name = "_Test_limiter_async",
     src = "test_limiter_async.ml",
-    intf = ":_Test_limiter_async",
-    ns_module = ":Limiter_async_test_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-    ],
+    intf = ":_Test_limiter_async.cmi",
+    ns = ":Limiter_async_test_ns",
+    opts = LIMITER_ASYNC_TEST_MODULE_OPTS,
+    ppx = LIMITER_ASYNC_TEST_PPX,
+    ppx_args = LIMITER_ASYNC_TEST_PPX_ARGS,
+    deps = LIMITER_ASYNC_TEST_DEPS,
 )
 
+################
 ocaml_interface(
-    name = "_Test_limiter_async",
+    name = "_Test_limiter_async.cmi",
     src = "test_limiter_async.mli",
-    ns_module = ":Limiter_async_test_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
+    ns = ":Limiter_async_test_ns",
+    opts = LIMITER_ASYNC_TEST_INTERFACE_OPTS,
+    ppx = LIMITER_ASYNC_TEST_PPX,
+    ppx_args = LIMITER_ASYNC_TEST_PPX_ARGS,
+    deps = LIMITER_ASYNC_TEST_DEPS,
 )

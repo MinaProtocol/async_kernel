@@ -2,95 +2,44 @@
 
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
 )
 
-## Global Options
-load(
-    "//bzl:config.bzl",
-    "ARCHIVE_OPTS",
-    "GLOBAL_CLI_OPTS",
-    "INTERFACE_OPTS",
-    "MODULE_OPTS",
-    "NS_MODULE_OPTS",
-)
-
-## Repo Options
-load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
-
-PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
-
-LIB_1_OPTS = []
-
-LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
-
-LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
-
-LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
-
-LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
-
-LIB_1_DEPS = [
-    # do not sort (buildifier)
-    "@opam//pkg:core_kernel",
-    "@opam//pkg:core_kernel.limiter",
-    "@async_kernel//src:async_kernel",
-]
-
-PPX_1 = "@//bzl/ppx:ppx.exe[ppx_jane]"
-
-PPX_1_ARGS = [
-    # do not sort (buildifier)
-]
-
-################################################################
-## LIB 1
-################################################################
-ocaml_archive(
-    name = "limiter_async",
-    opts = LIB_1_ARCHIVE_OPTS,
-    visibility = ["//visibility:public"],
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Limiter_async_ns",
-        ":Limiter_async",
-    ],
-)
-
-ocaml_ns_module(
-    name = "Limiter_async_ns",
-    ns = "limiter_async",
-    opts = LIB_1_NS_MODULE_OPTS,
-    submodules = [
-        # do not sort (buildifier)
-        "limiter_async.ml",
-    ],
-)
-
+#############
 ocaml_module(
-    name = "Limiter_async",
+    name = "limiter_async",
     src = "limiter_async.ml",
-    intf = ":_Limiter_async",
-    ns_module = ":Limiter_async_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    intf = ":_Limiter_async.cmi",
+    opts = [],
+    ppx = "//bzl/ppx/exe:ppx_jane",
+    ppx_args = [
         # do not sort (buildifier)
+        "-inline-test-lib",
+        "limiter_async",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@async_kernel//src:async_kernel",
+        "@opam//pkg:core_kernel",
+        "@opam//pkg:core_kernel.limiter",
     ],
 )
 
+################
 ocaml_interface(
-    name = "_Limiter_async",
+    name = "_Limiter_async.cmi",
     src = "limiter_async.mli",
-    ns_module = ":Limiter_async_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    opts = [],
+    ppx = "//bzl/ppx/exe:ppx_jane",
+    ppx_args = [
         # do not sort (buildifier)
+        "-inline-test-lib",
+        "limiter_async",
+    ],
+    deps = [
+        "@async_kernel//src:async_kernel",
+        "@opam//pkg:core_kernel",
+        "@opam//pkg:core_kernel.limiter",
     ],
 )

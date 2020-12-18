@@ -5,64 +5,46 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
-## Global Options
-load(
-    "//bzl:config.bzl",
-    "ARCHIVE_OPTS",
-    "GLOBAL_CLI_OPTS",
-    "INTERFACE_OPTS",
-    "MODULE_OPTS",
-    "NS_MODULE_OPTS",
-)
+################################################################
+## STANZA 1: LIBRARY PERSISTENT_CONNECTION_KERNEL
+################################################################
+PERSISTENT_CONNECTION_KERNEL_INTERFACE_OPTS = []
 
-## Repo Options
-load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
+PERSISTENT_CONNECTION_KERNEL_MODULE_OPTS = []
 
-PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
-
-LIB_1_OPTS = []
-
-LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
-
-LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
-
-LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
-
-LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
-
-LIB_1_DEPS = [
+PERSISTENT_CONNECTION_KERNEL_DEPS = [
     # do not sort (buildifier)
     "@async_kernel//src:async_kernel",
 ]
 
-PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+PERSISTENT_CONNECTION_KERNEL_PPX = "@//bzl/ppx/exe:ppx_jane"
 
-PPX_1_ARGS = [
+PERSISTENT_CONNECTION_KERNEL_PPX_ARGS = [
     # do not sort (buildifier)
+    "-inline-test-lib",
+    "persistent_connection_kernel",
 ]
 
-################################################################
-## LIB 1
-################################################################
+##############
 ocaml_archive(
     name = "persistent_connection_kernel",
-    opts = LIB_1_ARCHIVE_OPTS,
+    opts = [],
     visibility = ["//visibility:public"],
-    deps = LIB_1_DEPS + [
+    deps = PERSISTENT_CONNECTION_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Persistent_connection_kernel_ns",
-        ":Persistent_connection_kernel",
-        ":Persistent_connection_kernel_intf",
+        ":_Persistent_connection_kernel",
+        ":_Persistent_connection_kernel_intf",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Persistent_connection_kernel_ns",
     ns = "persistent_connection_kernel",
-    opts = LIB_1_NS_MODULE_OPTS,
+    opts = [],
     submodules = [
         # do not sort (buildifier)
         "persistent_connection_kernel.ml",
@@ -70,41 +52,42 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Persistent_connection_kernel",
-    src = "persistent_connection_kernel.ml",
-    intf = ":_Persistent_connection_kernel",
-    ns_module = ":Persistent_connection_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-        ":Persistent_connection_kernel_intf",
-    ],
-)
-
-ocaml_interface(
     name = "_Persistent_connection_kernel",
-    src = "persistent_connection_kernel.mli",
-    ns_module = ":Persistent_connection_kernel_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    src = "persistent_connection_kernel.ml",
+    intf = ":_Persistent_connection_kernel.cmi",
+    ns = ":Persistent_connection_kernel_ns",
+    opts = PERSISTENT_CONNECTION_KERNEL_MODULE_OPTS,
+    ppx = PERSISTENT_CONNECTION_KERNEL_PPX,
+    ppx_args = PERSISTENT_CONNECTION_KERNEL_PPX_ARGS,
+    deps = PERSISTENT_CONNECTION_KERNEL_DEPS + [
         # do not sort (buildifier)
-        ":Persistent_connection_kernel_intf",
+        ":_Persistent_connection_kernel_intf",
     ],
 )
 
-ocaml_module(
-    name = "Persistent_connection_kernel_intf",
-    src = "persistent_connection_kernel_intf.ml",
-    ns_module = ":Persistent_connection_kernel_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+################
+ocaml_interface(
+    name = "_Persistent_connection_kernel.cmi",
+    src = "persistent_connection_kernel.mli",
+    ns = ":Persistent_connection_kernel_ns",
+    opts = PERSISTENT_CONNECTION_KERNEL_INTERFACE_OPTS,
+    ppx = PERSISTENT_CONNECTION_KERNEL_PPX,
+    ppx_args = PERSISTENT_CONNECTION_KERNEL_PPX_ARGS,
+    deps = PERSISTENT_CONNECTION_KERNEL_DEPS + [
         # do not sort (buildifier)
+        ":_Persistent_connection_kernel_intf",
     ],
+)
+
+#############
+ocaml_module(
+    name = "_Persistent_connection_kernel_intf",
+    src = "persistent_connection_kernel_intf.ml",
+    ns = ":Persistent_connection_kernel_ns",
+    opts = PERSISTENT_CONNECTION_KERNEL_MODULE_OPTS,
+    ppx = PERSISTENT_CONNECTION_KERNEL_PPX,
+    ppx_args = PERSISTENT_CONNECTION_KERNEL_PPX_ARGS,
+    deps = PERSISTENT_CONNECTION_KERNEL_DEPS,
 )

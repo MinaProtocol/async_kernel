@@ -5,65 +5,47 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
-## Global Options
-load(
-    "//bzl:config.bzl",
-    "ARCHIVE_OPTS",
-    "GLOBAL_CLI_OPTS",
-    "INTERFACE_OPTS",
-    "MODULE_OPTS",
-    "NS_MODULE_OPTS",
-)
+################################################################
+## STANZA 1: LIBRARY WEAK_HASHTBL_ASYNC
+################################################################
+WEAK_HASHTBL_ASYNC_INTERFACE_OPTS = []
 
-## Repo Options
-load("//bzl/async_kernel:config.bzl", "ASYNC_KERNEL_OPTS")
+WEAK_HASHTBL_ASYNC_MODULE_OPTS = []
 
-PKG_OPTS = GLOBAL_CLI_OPTS + ASYNC_KERNEL_OPTS + []
-
-LIB_1_OPTS = []
-
-LIB_1_ARCHIVE_OPTS = PKG_OPTS + LIB_1_OPTS + ARCHIVE_OPTS
-
-LIB_1_INTERFACE_OPTS = PKG_OPTS + LIB_1_OPTS + INTERFACE_OPTS
-
-LIB_1_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + MODULE_OPTS
-
-LIB_1_NS_MODULE_OPTS = PKG_OPTS + LIB_1_OPTS + NS_MODULE_OPTS
-
-LIB_1_DEPS = [
+WEAK_HASHTBL_ASYNC_DEPS = [
     # do not sort (buildifier)
     "@opam//pkg:core_kernel.weak_hashtbl",
     "@async_kernel//src:async_kernel",
 ]
 
-PPX_1 = "//bzl/ppx:ppx[ppx_jane]"
+WEAK_HASHTBL_ASYNC_PPX = "@//bzl/ppx/exe:ppx_jane"
 
-PPX_1_ARGS = [
+WEAK_HASHTBL_ASYNC_PPX_ARGS = [
     # do not sort (buildifier)
+    "-inline-test-lib",
+    "weak_hashtbl_async",
 ]
 
-################################################################
-## LIB 1
-################################################################
+##############
 ocaml_archive(
     name = "weak_hashtbl_async",
-    opts = LIB_1_ARCHIVE_OPTS,
+    opts = [],
     visibility = ["//visibility:public"],
-    deps = LIB_1_DEPS + [
+    deps = WEAK_HASHTBL_ASYNC_DEPS + [
         # do not sort (buildifier)
-        ":Weak_hashtbl_async_ns",
-        ":Import",
-        ":Weak_hashtbl_async",
+        ":_Import",
+        ":_Weak_hashtbl_async",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Weak_hashtbl_async_ns",
     ns = "weak_hashtbl_async",
-    opts = LIB_1_NS_MODULE_OPTS,
+    opts = [],
     submodules = [
         # do not sort (buildifier)
         "import.ml",
@@ -71,37 +53,39 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Import",
+    name = "_Import",
     src = "import.ml",
-    ns_module = ":Weak_hashtbl_async_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
+    ns = ":Weak_hashtbl_async_ns",
+    opts = WEAK_HASHTBL_ASYNC_MODULE_OPTS,
+    ppx = WEAK_HASHTBL_ASYNC_PPX,
+    ppx_args = WEAK_HASHTBL_ASYNC_PPX_ARGS,
+    deps = WEAK_HASHTBL_ASYNC_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Weak_hashtbl_async",
+    name = "_Weak_hashtbl_async",
     src = "weak_hashtbl_async.ml",
-    intf = ":_Weak_hashtbl_async",
-    ns_module = ":Weak_hashtbl_async_ns",
-    opts = LIB_1_MODULE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
+    intf = ":_Weak_hashtbl_async.cmi",
+    ns = ":Weak_hashtbl_async_ns",
+    opts = WEAK_HASHTBL_ASYNC_MODULE_OPTS,
+    ppx = WEAK_HASHTBL_ASYNC_PPX,
+    ppx_args = WEAK_HASHTBL_ASYNC_PPX_ARGS,
+    deps = WEAK_HASHTBL_ASYNC_DEPS + [
         # do not sort (buildifier)
-        ":Import",
+        ":_Import",
     ],
 )
 
+################
 ocaml_interface(
-    name = "_Weak_hashtbl_async",
+    name = "_Weak_hashtbl_async.cmi",
     src = "weak_hashtbl_async.mli",
-    ns_module = ":Weak_hashtbl_async_ns",
-    opts = LIB_1_INTERFACE_OPTS,
-    ppx = PPX_1,
-    ppx_args = PPX_1_ARGS,
-    deps = LIB_1_DEPS + [
-        # do not sort (buildifier)
-    ],
+    ns = ":Weak_hashtbl_async_ns",
+    opts = WEAK_HASHTBL_ASYNC_INTERFACE_OPTS,
+    ppx = WEAK_HASHTBL_ASYNC_PPX,
+    ppx_args = WEAK_HASHTBL_ASYNC_PPX_ARGS,
+    deps = WEAK_HASHTBL_ASYNC_DEPS,
 )

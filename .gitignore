@@ -2,8 +2,6 @@
 .bazel
 bazel-*
 user.bazelrc
-
-# clojure
 .cpcache
 
 _build

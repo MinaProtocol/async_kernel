@@ -17,12 +17,35 @@ bazel_skylib_workspace()
 
 ###############
 git_repository(
+    name = "obazl_tools_bazel",
+    remote = "https://github.com/obazl/tools_bazel",
+    branch = "main",
+)
+git_repository(
+    name = "obazl_rules_opam",
+    remote = "https://github.com/obazl/rules_opam",
+    branch = "main",
+)
+git_repository(
     name = "obazl_rules_ocaml",
     remote = "https://github.com/obazl/rules_ocaml",
-    branch = "master",
+    branch = "main",
 )
 
-load("@obazl_rules_ocaml//ocaml:bootstrap.bzl", "ocaml_configure")
+load("@obazl_rules_opam//opam:bootstrap.bzl", opam_configure = "configure")
+load("//bzl:opam.bzl", "opam")
+switch = opam_configure(opam = opam)
 
-ocaml_configure()
+load("@obazl_rules_ocaml//ocaml:bootstrap.bzl", ocaml_configure = "configure")
+ocaml_configure( switch = switch)
+# ###############
+# git_repository(
+#     name = "obazl_rules_ocaml",
+#     remote = "https://github.com/obazl/rules_ocaml",
+#     branch = "master",
+# )
+
+# load("@obazl_rules_ocaml//ocaml:bootstrap.bzl", "ocaml_configure")
+
+# ocaml_configure()
 

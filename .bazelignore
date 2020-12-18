@@ -1,0 +1,3 @@
+## these do not compile; they throw "inconsistent assumption" errors involving opam pkgs.
+limiter_async/test
+weak_hashtbl_async/test
