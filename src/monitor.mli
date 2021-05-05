@@ -56,6 +56,7 @@ val name : t -> Info.t
 
 val parent : t -> t option
 val depth : t -> int
+val here : t -> Source_code_position.t option
 
 (** [current ()] returns the current monitor. *)
 val current : unit -> t
