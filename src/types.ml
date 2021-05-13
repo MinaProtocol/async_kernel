@@ -60,6 +60,7 @@ and Execution_context : sig
     { monitor : Monitor.t
     ; priority : Priority.t
     ; local_storage : Univ_map.t
+    ; tid : int
     ; backtrace_history : Backtrace.t list
     }
 end =
@@ -142,17 +143,6 @@ module rec Event : sig
     }
 end =
   Event
-
-and Execution_context : sig
-  type t =
-    { monitor : Monitor.t
-    ; priority : Priority.t
-    ; local_storage : Univ_map.t
-    ; tid : int
-    ; backtrace_history : Backtrace.t list
-    }
-end =
-  Execution_context
 
 and External_job : sig
   type t = T : Execution_context.t * ('a -> unit) * 'a -> t
