@@ -8,6 +8,9 @@ open! Import
 
 type 'a with_options = ?monitor:Monitor.t -> ?priority:Priority.t -> 'a
 
+(** expose for Mina *)
+val t : unit -> Scheduler.t
+
 val current_execution_context : unit -> Execution_context.t
 
 (** [within_context context f] runs [f ()] right now with the specified execution
