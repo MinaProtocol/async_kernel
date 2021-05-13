@@ -21,12 +21,7 @@ module M = Monad.Make (struct
     let map = `Custom map
   end)
 
-include (
-  M :
-    module type of struct
-    include M
-  end
-  with module Let_syntax := M.Let_syntax)
+include M
 
 (* We rebind all the various [return]s because the use of the [Monad.Make] functor
    causes the compiler to not inline [return], and hence makes it impossible to
@@ -43,12 +38,7 @@ include (
 let return = Deferred0.return
 
 module Let_syntax = struct
-  include (
-    M.Let_syntax :
-      module type of struct
-      include M.Let_syntax
-    end
-    with module Let_syntax := M.Let_syntax.Let_syntax)
+  include M.Let_syntax
 
   let return = Deferred0.return
 
@@ -69,7 +59,8 @@ let unit = return ()
 let ignore = ignore_m
 
 let both t1 t2 =
-  create (fun result -> upon t1 (fun a1 -> upon t2 (fun a2 -> Ivar.fill result (a1, a2))))
+  create (fun result ->
+    upon t1 (fun a1 -> upon t2 (fun a2 -> Ivar.fill result (a1, a2))))
 ;;
 
 module Infix = struct
@@ -122,9 +113,9 @@ let enabled choices =
              | Some v -> f v :: ac))))
   in
   let execution_context = Scheduler.(current_execution_context (t ())) in
-  unregisters :=
-    List.fold choices ~init:Unregister.Nil ~f:(fun acc (Choice.T (t, _)) ->
-      Cons (t, Deferred0.add_handler t ready execution_context, acc));
+  unregisters
+  := List.fold choices ~init:Unregister.Nil ~f:(fun acc (Choice.T (t, _)) ->
+    Cons (t, Deferred0.add_handler t ready execution_context, acc));
   Ivar.read result
 ;;
 
@@ -147,9 +138,9 @@ let choose choices =
       Ivar.fill result (choose_result choices))
   in
   let execution_context = Scheduler.(current_execution_context (t ())) in
-  unregisters :=
-    List.fold choices ~init:Unregister.Nil ~f:(fun acc (Choice.T (t, _)) ->
-      Cons (t, Deferred0.add_handler t ready execution_context, acc));
+  unregisters
+  := List.fold choices ~init:Unregister.Nil ~f:(fun acc (Choice.T (t, _)) ->
+    Cons (t, Deferred0.add_handler t ready execution_context, acc));
   Ivar.read result
 ;;
 
@@ -204,5 +195,4 @@ let fold t ~init ~f =
 let seqmap t ~f = fold t ~init:[] ~f:(fun bs a -> f a >>| fun b -> b :: bs) >>| List.rev
 let all ds = seqmap ds ~f:Fn.id
 let all_unit ds = fold ds ~init:() ~f:(fun () d -> d)
-let all_ignore = all_unit
 let ok x = x >>| fun x -> Ok x

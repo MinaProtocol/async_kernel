@@ -6,7 +6,8 @@ module Deferred = Deferred1
 type 'a outcome =
   [ `Ok of 'a
   | `Aborted
-  | `Raised of exn ]
+  | `Raised of exn
+  ]
 [@@deriving sexp_of]
 
 module Internal_job : sig
@@ -16,12 +17,12 @@ module Internal_job : sig
 
   (* Every internal job will eventually be either [run] or [abort]ed, but not both. *)
 
-  val run : 'a t -> 'a -> [`Ok | `Raised] Deferred.t
+  val run : 'a t -> 'a -> [ `Ok | `Raised ] Deferred.t
   val abort : _ t -> unit
 end = struct
   type 'a t =
-    { start : [`Abort | `Start of 'a] Ivar.t
-    ; outcome : [`Ok | `Aborted | `Raised] Deferred.t
+    { start : [ `Abort | `Start of 'a ] Ivar.t
+    ; outcome : [ `Ok | `Aborted | `Raised ] Deferred.t
     }
   [@@deriving sexp_of]
 
@@ -57,41 +58,34 @@ end
 
 type 'a t =
   { continue_on_error : bool
-  ; max_concurrent_jobs :
-      int
-  (* [job_resources_not_in_use] holds resources that are not currently in use by a
-     running job. *)
-  ; job_resources_not_in_use :
-      'a Stack_or_counter.t
-  (* [jobs_waiting_to_start] is the queue of jobs that haven't yet started. *)
-  ; jobs_waiting_to_start :
-      'a Internal_job.t Queue.t
-  (* [0 <= num_jobs_running <= max_concurrent_jobs]. *)
-  ; mutable num_jobs_running :
-      int
-  (* [capacity_available] is [Some ivar] if user code has called [capacity_available t] and
-     is waiting to be notified when capacity is available in the throttle.
-     [maybe_start_job] will fill [ivar] when capacity becomes available, i.e. when
-     [jobs_waiting_to_start] is empty and [num_jobs_running < max_concurrent_jobs]. *)
-  ; mutable capacity_available :
-      unit Ivar.t option
-  (* [is_dead] is true if [t] was killed due to a job raising an exception or [kill t]
-     being called. *)
-  ; mutable is_dead :
-      bool
-  (* [cleans] holds functions that will be called to clean each resource when [t] is
-     killed. *)
-  ; mutable cleans :
-      ('a -> unit Deferred.t) list
-  (* [num_resources_not_cleaned] is the number of resources whose clean functions have not
-     yet completed.  While [t] is alive, [num_resources_not_cleaned =
-     max_concurrent_jobs].  Once [t] is killed, [num_resources_not_cleaned] decreases to
-     zero over time as the clean functions complete. *)
-  ; mutable num_resources_not_cleaned :
-      int
-  (* [cleaned] becomes determined when [num_resources_not_cleaned] reaches zero,
-     i.e. after [t] is killed and all its clean functions complete. *)
-  ; cleaned : unit Ivar.t
+  ; max_concurrent_jobs : int
+  ; (* [job_resources_not_in_use] holds resources that are not currently in use by a
+       running job. *)
+    job_resources_not_in_use : 'a Stack_or_counter.t
+  ;
+    (* [jobs_waiting_to_start] is the queue of jobs that haven't yet started. *)
+    jobs_waiting_to_start : 'a Internal_job.t Queue.t
+  ; (* [0 <= num_jobs_running <= max_concurrent_jobs]. *)
+    mutable num_jobs_running : int
+  ; (* [capacity_available] is [Some ivar] if user code has called [capacity_available t]
+       and is waiting to be notified when capacity is available in the throttle.
+       [maybe_start_job] will fill [ivar] when capacity becomes available, i.e. when
+       [jobs_waiting_to_start] is empty and [num_jobs_running < max_concurrent_jobs]. *)
+    mutable capacity_available : unit Ivar.t option
+  ; (* [is_dead] is true if [t] was killed due to a job raising an exception or [kill t]
+       being called. *)
+    mutable is_dead : bool
+  ; (* [cleans] holds functions that will be called to clean each resource when [t] is
+       killed. *)
+    mutable cleans : ('a -> unit Deferred.t) list
+  ; (* [num_resources_not_cleaned] is the number of resources whose clean functions have
+       not yet completed.  While [t] is alive, [num_resources_not_cleaned =
+       max_concurrent_jobs].  Once [t] is killed, [num_resources_not_cleaned] decreases to
+       zero over time as the clean functions complete. *)
+    mutable num_resources_not_cleaned : int
+  ; (* [cleaned] becomes determined when [num_resources_not_cleaned] reaches zero,
+       i.e. after [t] is killed and all its clean functions complete. *)
+    cleaned : unit Ivar.t
   }
 [@@deriving fields, sexp_of]
 
@@ -236,7 +230,7 @@ let create ~continue_on_error ~max_concurrent_jobs =
 module Job = struct
   type ('a, 'b) t =
     { internal_job : 'a Internal_job.t
-    ; result : [`Ok of 'b | `Aborted | `Raised of exn] Deferred.t
+    ; result : [ `Ok of 'b | `Aborted | `Raised of exn ] Deferred.t
     }
 
   let result t = t.result
@@ -258,11 +252,32 @@ let enqueue' t f =
   Job.result job
 ;;
 
-let enqueue t f =
-  match%map enqueue' t f with
+let handle_enqueue_result result =
+  match result with
   | `Ok a -> a
   | `Aborted -> raise_s [%message "throttle aborted job"]
   | `Raised exn -> raise exn
+;;
+
+let enqueue t f = enqueue' t f >>| handle_enqueue_result
+
+let enqueue_exclusive t f =
+  let n = t.max_concurrent_jobs in
+  if Int.( >= ) n 1_000_000
+  then
+    raise_s
+      [%sexp
+        "[enqueue_exclusive] was called with a very large value of \
+         [max_concurrent_jobs]. This doesn't work."];
+  let done_ = Ivar.create () in
+  assert (n > 0);
+  let f_placeholder _slot = Ivar.read done_ in
+  for _ = 1 to n - 1 do
+    don't_wait_for (enqueue t f_placeholder)
+  done;
+  let%map result = enqueue' t (fun _slot -> f ()) in
+  Ivar.fill done_ ();
+  handle_enqueue_result result
 ;;
 
 let monad_sequence_how ?(how = `Sequential) ~f =

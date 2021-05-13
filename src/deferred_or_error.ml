@@ -3,16 +3,12 @@ open! Import
 module Deferred = Deferred1
 
 module Monitor = struct
-  let try_with = Monitor.try_with ?run:None
+  let try_with = Monitor.try_with
 end
 
 (* Copied to [eager_deferred_or_error.ml].  There should be no diffs below this line. *)
 
-include (
-  Deferred_result :
-    Monad.S2
-  with type ('a, 'b) t := ('a, 'b) Deferred_result.t
-  with module Let_syntax := Deferred_result.Let_syntax)
+include (Deferred_result : Monad.S2 with type ('a, 'b) t := ('a, 'b) Deferred_result.t)
 
 type 'a t = 'a Or_error.t Deferred.t
 
@@ -60,6 +56,7 @@ let error_s sexp = Deferred.return (Or_error.error_s sexp)
 let error_string msg = Deferred.return (Or_error.error_string msg)
 let errorf format = ksprintf error_string format
 let tag t ~tag = Deferred.map t ~f:(Or_error.tag ~tag)
+let tag_s t ~tag = Deferred.map t ~f:(Or_error.tag_s ~tag)
 
 let tag_arg t message a sexp_of_a =
   Deferred.map t ~f:(fun t -> Or_error.tag_arg t message a sexp_of_a)
@@ -68,6 +65,10 @@ let tag_arg t message a sexp_of_a =
 let unimplemented msg = Deferred.return (Or_error.unimplemented msg)
 let combine_errors l = Deferred.map (Deferred.all l) ~f:Or_error.combine_errors
 let combine_errors_unit l = Deferred.map (Deferred.all l) ~f:Or_error.combine_errors_unit
+
+let filter_ok_at_least_one l =
+  Deferred.map (Deferred.all l) ~f:Or_error.filter_ok_at_least_one
+;;
 
 let find_map_ok l ~f =
   Deferred.repeat_until_finished (l, []) (fun (l, errors) ->
@@ -83,14 +84,14 @@ let find_map_ok l ~f =
 
 let ok_unit = return ()
 
-let try_with ?extract_exn ?here ?name f =
-  Deferred.map (Monitor.try_with ?extract_exn ?here ?name f) ~f:(function
+let try_with ?extract_exn ?run ?here ?name f =
+  Deferred.map (Monitor.try_with ?extract_exn ?run ?here ?name f) ~f:(function
     | Error exn -> Error (Error.of_exn exn)
     | Ok _ as ok -> ok)
 ;;
 
-let try_with_join ?extract_exn ?here ?name f =
-  Deferred.map (try_with ?here ?extract_exn ?name f) ~f:Or_error.join
+let try_with_join ?extract_exn ?run ?here ?name f =
+  Deferred.map (try_with ?extract_exn ?run ?here ?name f) ~f:Or_error.join
 ;;
 
 module List = struct

@@ -1,5 +1,6 @@
 open! Core_kernel
 open! Async_kernel
+open! Async_kernel_require_explicit_time_source
 include Persistent_connection_kernel_intf
 
 module Make (Conn : T) = struct
@@ -11,7 +12,7 @@ module Make (Conn : T) = struct
       | Attempting_to_connect
       | Obtained_address of address
       | Failed_to_connect of Error.t
-      | Connected of conn sexp_opaque
+      | Connected of (conn[@sexp.opaque])
       | Disconnected
     [@@deriving sexp_of]
 
@@ -36,7 +37,7 @@ module Make (Conn : T) = struct
     { get_address : unit -> address Or_error.t Deferred.t
     ; connect : address -> Conn.t Or_error.t Deferred.t
     ; retry_delay : unit -> unit Deferred.t
-    ; mutable conn : [`Ok of Conn.t | `Close_started] Ivar.t
+    ; mutable conn : [ `Ok of Conn.t | `Close_started ] Ivar.t
     ; event_handler : Event.Handler.t
     ; close_started : unit Ivar.t
     ; close_finished : unit Ivar.t
@@ -104,15 +105,19 @@ module Make (Conn : T) = struct
         ~server_name
         ?(on_event = fun _ -> Deferred.unit)
         ?(retry_delay = const (Time_ns.Span.of_sec 10.))
+        ?(random_state = Random.State.default)
+        ?(time_source = Time_source.wall_clock ())
         ~connect
         get_address
     =
     let event_handler = { Event.Handler.server_name; on_event } in
     let retry_delay () =
       let span = Time_ns.Span.to_sec (retry_delay ()) in
-      let distance = Random.float (span *. 0.3) in
-      let wait = if Random.bool () then span +. distance else span -. distance in
-      Clock_ns.after (Time_ns.Span.of_sec wait)
+      let distance = Random.State.float random_state (span *. 0.3) in
+      let wait =
+        if Random.State.bool random_state then span +. distance else span -. distance
+      in
+      Time_source.after time_source (Time_ns.Span.of_sec wait)
     in
     let t =
       { event_handler
@@ -196,8 +201,7 @@ module Make (Conn : T) = struct
 
   let current_connection t =
     match Deferred.peek (Ivar.read t.conn) with
-    | None
-    | Some `Close_started -> None
+    | None | Some `Close_started -> None
     | Some (`Ok conn) -> Some conn
   ;;
 

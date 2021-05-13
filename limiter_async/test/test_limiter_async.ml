@@ -1,9 +1,10 @@
 open! Core_kernel
+open Poly
 open! Async_kernel
 open! Expect_test_helpers
 module Limiter = Limiter_async
 
-let stabilize = Async_kernel_scheduler.run_cycles_until_no_jobs_remain
+let stabilize = Async_kernel_scheduler.Expert.run_cycles_until_no_jobs_remain
 
 let%test_module _ =
   (module (struct

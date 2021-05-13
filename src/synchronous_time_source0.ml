@@ -15,25 +15,27 @@ module Time_ns = struct
 end
 
 module Alarm = struct
-  include Timing_wheel_ns.Alarm
+  include Timing_wheel.Alarm
 
   let is_null t = phys_equal t (null ())
 end
 
-module Alarm_precision = Timing_wheel_ns.Alarm_precision
+module Alarm_precision = Timing_wheel.Alarm_precision
 
 let default_timing_wheel_config =
   (* 1/8th of a millisecond alarm_precision seems sufficient to avoid having many alarms
      in the same interval, which avoids quadratic insertion sort when firing alarms.  And
      the level bits give us levels of >1s, >1m, >1h, >1d.  See test in
      [../test/test_synchronous_time_source.ml]. *)
-  Timing_wheel_ns.Config.create
+  Timing_wheel.Config.create
     ~alarm_precision:Alarm_precision.(div about_one_millisecond ~pow2:3)
-    ~level_bits:(Timing_wheel_ns.Level_bits.create_exn [ 13; 6; 6; 5 ])
+    ~level_bits:(Timing_wheel.Level_bits.create_exn [ 13; 6; 6; 5 ])
     ()
 ;;
 
 type callback = unit -> unit
+
+module Id = Types.Time_source_id
 
 module T1 = struct
   module Event = struct
@@ -47,8 +49,7 @@ module T1 = struct
         (* currently running the callback *)
         | Scheduled
         (* in the timing wheel *)
-        | Unscheduled
-        (* not in timing wheel or [fired_events] *)
+        | Unscheduled (* not in timing wheel or [fired_events] *)
       [@@deriving compare, sexp_of]
 
       let transition_is_allowed ~from ~to_ =
@@ -72,13 +73,13 @@ module T1 = struct
       ; mutable at : Time_ns.t
       ; callback : unit -> unit
       ; execution_context : Execution_context.t
-      ; mutable interval :
-          Time_ns.Span.t option
-      (* [next_fired] is a singly-linked list of fired events, linked via [next_fired].
-         An event is added to the list when it fires, either because it is added with
-         a time in the past, or because time advances.  [advance_by_alarms] iterates
-         over the events in [next_fired] and runs them, emptying the list. *)
-      ; mutable next_fired : t
+      ; (* [interval] is the period for the periodic events *)
+        mutable interval : Time_ns.Span.t option
+      ; (* [next_fired] is a singly-linked list of fired events, linked via [next_fired].
+           An event is added to the list when it fires, either because it is added with a
+           time in the past, or because time advances.  [advance_by_alarms] iterates over
+           the events in [next_fired] and runs them, emptying the list. *)
+        mutable next_fired : t
       ; mutable status : Status.t
       }
     [@@deriving fields]
@@ -86,7 +87,7 @@ module T1 = struct
     (* [none] is used to indicate the end of the singly-linked list of fired events. *)
     let rec none =
       { alarm = Alarm.null ()
-      ; at = Time_ns.min_value
+      ; at = Time_ns.min_value_for_1us_rounding
       ; callback = (fun () -> assert false)
       ; execution_context = Execution_context.main
       ; interval = None
@@ -171,37 +172,38 @@ module T1 = struct
   end
 
   type -'rw t = 'rw Types.Time_source.t1 =
-    { (* [advance_errors] accumulates errors raised by alarms run by
+    { id : Id.t
+    ; (* [advance_errors] accumulates errors raised by alarms run by
          [advance_by_alarms]. *)
       mutable advance_errors : Error.t list
     ; (* [am_advancing] is true only during [advance_by_alarms], and is used to cause
          callbacks to raise if they call [advance_by_alarms]. *)
       mutable am_advancing : bool
-    ; events :
-        Job_or_event.t Timing_wheel_ns.t
-    (* [fired_events] is the front of the singly linked list of fired events, which is
-       stored in increasing order of [Event.at]. *)
-    ; mutable fired_events :
-        Event.t
-    (* [most_recently_fired] is the event that was most recently inserted into
-       [fired_events].  It is used as an optimization to allow insertion of subsequent
-       events to start later in the list rather than at the beginning.  It specifically
-       avoids quadratic behavior when inserting multiple events that have exactly the same
-       time -- the time source fires such events in the order they were added, and we want
-       them to be in that same order in [fired_events]. *)
-    ; mutable most_recently_fired :
-        Event.t
-    (* We store [handle_fired] in [t] to avoid allocating it every time we call
-       [advance_clock]. *)
-    ; handle_fired : Job_or_event.t Alarm.t -> unit
+    ; events : Job_or_event.t Timing_wheel.t
+    ; (* [fired_events] is the front of the singly linked list of fired events, which is
+         stored in increasing order of [Event.at]. *)
+      mutable fired_events : Event.t
+    ; (* [most_recently_fired] is the event that was most recently inserted into
+         [fired_events].  It is used as an optimization to allow insertion of subsequent
+         events to start later in the list rather than at the beginning.  It specifically
+         avoids quadratic behavior when inserting multiple events that have exactly the
+         same time -- the time source fires such events in the order they were added, and
+         we want them to be in that same order in [fired_events]. *)
+      mutable most_recently_fired : Event.t
+    ; (* We store [handle_fired] in [t] to avoid allocating it every time we call
+         [advance_clock]. *)
+      handle_fired : Job_or_event.t Alarm.t -> unit
     ; is_wall_clock : bool
     ; scheduler : Scheduler0.t
     }
   [@@deriving fields]
 
+  (* We don't include the [id] in the sexp because the user (rightly) can't control it, so
+     it's hard to make it deterministic in tests. *)
   let sexp_of_t
         _
-        { advance_errors = _
+        { id = _
+        ; advance_errors = _
         ; am_advancing = _
         ; events
         ; fired_events = _
@@ -211,12 +213,12 @@ module T1 = struct
         ; scheduler = _
         }
     =
-    let now = Timing_wheel_ns.now events in
+    let now = Timing_wheel.now events in
     if is_wall_clock
     then [%message "wall_clock" (now : Time_ns.t)]
     else (
       let all_events = ref [] in
-      Timing_wheel_ns.iter events ~f:(fun alarm ->
+      Timing_wheel.iter events ~f:(fun alarm ->
         all_events := (Alarm.at events alarm, Alarm.value events alarm) :: !all_events);
       let events =
         List.sort !all_events ~compare:(fun (at1, _) (at2, _) -> Time_ns.compare at1 at2)
@@ -225,7 +227,7 @@ module T1 = struct
       [%message "" (now : Time_ns.t) (events : Job_or_event.t list)])
   ;;
 
-  let timing_wheel_now t = Timing_wheel_ns.now t.events
+  let timing_wheel_now t = Timing_wheel.now t.events
 
   let is_in_fired_events t event =
     with_return (fun r ->
@@ -241,12 +243,13 @@ module T1 = struct
     Invariant.invariant [%here] t [%sexp_of: _ t] (fun () ->
       let check f = Invariant.check_field t f in
       Fields.iter
+        ~id:ignore
         ~advance_errors:ignore
         ~am_advancing:ignore
         ~events:
           (check (fun events ->
-             Timing_wheel_ns.invariant ignore events;
-             Timing_wheel_ns.iter events ~f:(fun alarm ->
+             Timing_wheel.invariant ignore events;
+             Timing_wheel.iter events ~f:(fun alarm ->
                let job_or_event = Alarm.value events alarm in
                let open Job_or_event.Match in
                let (K k) = kind job_or_event in
@@ -291,10 +294,11 @@ module Read_write = struct
   let invariant_with_jobs = invariant_with_jobs
 end
 
+let id t = t.id
 let is_wall_clock t = t.is_wall_clock
-let alarm_upper_bound t = (Timing_wheel_ns.alarm_upper_bound t.events [@warning "-3"])
-let max_allowed_alarm_time t = Timing_wheel_ns.max_allowed_alarm_time t.events
-let read_only (t : [> read] T1.t) = (t :> t)
+let length t = Timing_wheel.length t.events
+let max_allowed_alarm_time t = Timing_wheel.max_allowed_alarm_time t.events
+let read_only (t : [> read ] T1.t) = (t :> t)
 
 (* [fire t event] sets [event.status = Fired] and inserts [event] into [t.fired_events] in
    sorted time order. *)
@@ -305,8 +309,8 @@ let fire t (event : Event.t) =
   let current = ref t.fired_events in
   (* If [event] belongs after [t.most_recently_fired], then we start the insertion there
      rather than at the front of [t.fired_events].  This works nicely if we're getting the
-     alarms in non-decreasing time order, which is close to what [Timing_wheel_ns]
-     provides (although [Timing_wheel_ns] doesn't guarantee time ordering for times in the
+     alarms in non-decreasing time order, which is close to what [Timing_wheel]
+     provides (although [Timing_wheel] doesn't guarantee time ordering for times in the
      same interval). *)
   if Event.is_some t.most_recently_fired
   && Time_ns.( >= ) event.at t.most_recently_fired.at
@@ -314,7 +318,7 @@ let fire t (event : Event.t) =
     prev := t.most_recently_fired;
     current := !prev.next_fired);
   (* We use [Time_ns.( <= )] rather than [<] so that [event] is added after other events
-     at the same time.  Since [Timing_wheel_ns] fires alarms in a bucket in the order in
+     at the same time.  Since [Timing_wheel] fires alarms in a bucket in the order in
      which they were added, using [<=] keeps events at the same time in the order in which
      they were added. *)
   while Event.is_some !current && Time_ns.( <= ) !current.at event.at do
@@ -326,14 +330,13 @@ let fire t (event : Event.t) =
   if Event.is_none !prev then t.fired_events <- event else !prev.next_fired <- event
 ;;
 
-let alarm_precision t = Timing_wheel_ns.alarm_precision t.events
+let alarm_precision t = Timing_wheel.alarm_precision t.events
 let now t = if t.is_wall_clock then Time_ns.now () else timing_wheel_now t
 let timing_wheel_now = timing_wheel_now
 
 let schedule t (event : Event.t) =
   Event.set_status event Scheduled;
-  event.alarm
-  <- Timing_wheel_ns.add t.events ~at:event.at (event |> Job_or_event.of_event)
+  event.alarm <- Timing_wheel.add t.events ~at:event.at (event |> Job_or_event.of_event)
 ;;
 
 module Event = struct
@@ -406,7 +409,7 @@ module Event = struct
       Ok
     | Scheduled ->
       Event.set_status event Unscheduled;
-      Timing_wheel_ns.remove t.events event.alarm;
+      Timing_wheel.remove t.events event.alarm;
       event.alarm <- Alarm.null ();
       Ok
     | Unscheduled -> Previously_unscheduled
@@ -449,6 +452,37 @@ module Event = struct
     schedule_at_internal t event (now t) ~interval:(Some span)
   ;;
 
+  module Reschedule_result = struct
+    type t =
+      | Ok
+      | Currently_happening
+      | Recently_aborted
+      | Recently_fired
+    [@@deriving sexp_of]
+  end
+
+  let reschedule_at t event at : Reschedule_result.t =
+    match event.status with
+    | Aborted -> Recently_aborted
+    | Fired -> Recently_fired
+    | Happening -> Currently_happening
+    | Scheduled ->
+      event.at <- at;
+      if Time_ns.( > ) at (timing_wheel_now t)
+      then Timing_wheel.reschedule t.events event.alarm ~at
+      else (
+        Timing_wheel.remove t.events event.alarm;
+        fire t event);
+      Ok
+    | Unscheduled ->
+      event.at <- at;
+      event.interval <- None;
+      add t event;
+      Ok
+  ;;
+
+  let reschedule_after t event span = reschedule_at t event (Time_ns.after (now t) span)
+
 end
 
 let run_after t span callback = ignore (Event.after t span callback : Event.t)
@@ -458,7 +492,7 @@ let run_at_intervals t span callback =
   ignore (Event.at_intervals t span callback : Event.t)
 ;;
 
-type send_exn = Monitor0.t -> ?backtrace:[`Get | `This of Backtrace.t] -> exn -> unit
+type send_exn = Monitor0.t -> ?backtrace:[ `Get | `This of Backtrace.t ] -> exn -> unit
 
 let run_fired_events t ~(send_exn : send_exn option) =
   let current_execution_context = t.scheduler.current_execution_context in
@@ -499,51 +533,66 @@ let run_fired_events t ~(send_exn : send_exn option) =
 ;;
 
 let advance_clock t ~to_ ~send_exn =
-  Timing_wheel_ns.advance_clock t.events ~to_ ~handle_fired:t.handle_fired;
+  Timing_wheel.advance_clock t.events ~to_ ~handle_fired:t.handle_fired;
   run_fired_events t ~send_exn
 ;;
 
 let fire_past_alarms t ~send_exn =
-  Timing_wheel_ns.fire_past_alarms t.events ~handle_fired:t.handle_fired;
+  Timing_wheel.fire_past_alarms t.events ~handle_fired:t.handle_fired;
   run_fired_events t ~send_exn
 ;;
 
-let advance t ~to_ ~send_exn =
+let advance_internal t ~to_ ~send_exn =
   advance_clock t ~to_ ~send_exn;
   fire_past_alarms t ~send_exn
 ;;
 
-let advance_by_alarms t ~to_ =
-  let send_exn = None in
+let prepare_to_advance t ~send_exn =
   if t.am_advancing
   then raise_s [%message "cannot call [advance_by_alarms] from callback"];
   t.am_advancing <- true;
   (match t.advance_errors with
    | [] -> ()
    | _ -> t.advance_errors <- []);
-  run_fired_events t ~send_exn;
-  let continue = ref true in
-  while !continue do
-    if Timing_wheel_ns.is_empty t.events
-    then continue := false
-    else (
-      let next_alarm_fires_at = Timing_wheel_ns.next_alarm_fires_at_exn t.events in
-      if Time_ns.( >= ) next_alarm_fires_at to_
-      then continue := false
-      else
-        (* We use the actual alarm time, rather than [next_alarm_fires_at], so as not to
-           expose (or accumulate errors associated with) the precision of
-           [Timing_wheel_ns]. *)
-        advance
-          t
-          ~to_:(Timing_wheel_ns.max_alarm_time_in_min_interval_exn t.events)
-          ~send_exn)
-  done;
-  advance t ~to_ ~send_exn;
+  run_fired_events t ~send_exn
+;;
+
+let finish_advancing t =
   t.am_advancing <- false;
   match t.advance_errors with
   | [] -> Ok ()
   | errors ->
     t.advance_errors <- [];
     Error (Error.of_list errors)
+;;
+
+let advance_by_alarms t ~to_ =
+  let send_exn = None in
+  prepare_to_advance t ~send_exn;
+  let continue = ref true in
+  while !continue do
+    if Timing_wheel.is_empty t.events
+    then continue := false
+    else (
+      let next_alarm_fires_at = Timing_wheel.next_alarm_fires_at_exn t.events in
+      if Time_ns.( >= ) next_alarm_fires_at to_
+      then continue := false
+      else
+        (* We use the actual alarm time, rather than [next_alarm_fires_at], so as not to
+           expose (or accumulate errors associated with) the precision of
+           [Timing_wheel]. *)
+        advance_internal
+          t
+          ~to_:(Timing_wheel.max_alarm_time_in_min_interval_exn t.events)
+          ~send_exn)
+  done;
+  advance_internal t ~to_ ~send_exn;
+  finish_advancing t
+;;
+
+let advance_directly t ~to_ =
+  let send_exn = None in
+  prepare_to_advance t ~send_exn;
+  advance_internal t ~to_ ~send_exn;
+  finish_advancing t
 ;;

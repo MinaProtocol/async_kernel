@@ -3,7 +3,7 @@ open Import
 include (Scheduler0 : module type of Scheduler0 with type t := Scheduler0.t)
 module Synchronous_time_source = Synchronous_time_source0
 module Event = Synchronous_time_source.Event
-module Alarm = Timing_wheel_ns.Alarm
+module Alarm = Timing_wheel.Alarm
 module Job_or_event = Synchronous_time_source.T1.Job_or_event
 
 let debug = Debug.scheduler
@@ -64,8 +64,7 @@ type t = Scheduler0.t =
   ; low_priority_jobs : Job_queue.t
   ; very_low_priority_workers : Very_low_priority_worker.t Deque.t
   ; mutable main_execution_context : Execution_context.t
-  ; mutable current_execution_context :
-      Execution_context.t
+  ; mutable current_execution_context : Execution_context.t
   (* The scheduler calls [got_uncaught_exn] when an exception bubbles to the top of the
      monitor tree without being handled.  This function guarantees to never run another
      job after this by calling [clear] and because [enqueue_job] will never add another
@@ -78,8 +77,7 @@ type t = Scheduler0.t =
   ; mutable last_cycle_time : Time_ns.Span.t
   ; mutable last_cycle_num_jobs : int
   ; mutable total_cycle_time : Time_ns.Span.t
-  ; mutable time_source :
-      read_write Synchronous_time_source.T1.t
+  ; mutable time_source : read_write Synchronous_time_source.T1.t
   (* [external_jobs] is a queue of actions sent from outside of async.  This is for the
      case where we want to schedule a job or fill an ivar from a context where it is not
      safe to run async code, because the async lock isn't held.  For instance: - in an
@@ -98,18 +96,15 @@ type t = Scheduler0.t =
      When running a cycle, we pull external actions at every job and perform them
      immediately. *)
   ; external_jobs : External_job.t Thread_safe_queue.t
-  ; mutable thread_safe_external_job_hook :
-      unit
-      -> unit
+  ; mutable thread_safe_external_job_hook : unit -> unit
   (* [job_queued_hook] and [event_added_hook] aim to be used by js_of_ocaml. *)
   (* We use [_ option] here because those hooks will not be set in the common case
      and we want to avoid extra function calls. *)
   ; mutable job_queued_hook : (Priority.t -> unit) option
   ; mutable event_added_hook : (Time_ns.t -> unit) option
-  ; mutable yield : (unit, read_write) Types.Bvar.t sexp_opaque
+  ; mutable yield : ((unit, read_write) Types.Bvar.t[@sexp.opaque])
   ; mutable yield_until_no_jobs_remain :
-      (unit, read_write) Types.Bvar.t sexp_opaque
-  (* configuration*)
+      ((unit, read_write) Types.Bvar.t[@sexp.opaque] (* configuration*))
   ; mutable check_invariants : bool
   ; mutable max_num_jobs_per_priority_per_cycle : Max_num_jobs_per_priority_per_cycle.t
   ; mutable record_backtraces : bool
@@ -254,9 +249,10 @@ let create () =
     ; long_jobs_last_cycle= []
     }
   and events =
-    Timing_wheel_ns.create ~config:Async_kernel_config.timing_wheel_config ~start:now
-  and time_source =
-    { Synchronous_time_source.T1.advance_errors = []
+    Timing_wheel.create ~config:Async_kernel_config.timing_wheel_config ~start:now
+  and time_source : _ Synchronous_time_source.T1.t =
+    { id = Types.Time_source_id.create ()
+    ; advance_errors = []
     ; am_advancing = false
     ; events
     ; handle_fired = (fun alarm -> handle_fired time_source (Alarm.value events alarm))
@@ -340,7 +336,7 @@ let rec run_jobs t =
        if Job_queue.can_run_a_job t.normal_priority_jobs
        || Job_queue.can_run_a_job t.low_priority_jobs
        then run_jobs t
-       else Result.ok_unit)
+       else Ok ())
 ;;
 
 let stabilize t =
@@ -359,9 +355,10 @@ let create_time_source
       ()
   =
   let t = t () in
-  let events = Timing_wheel_ns.create ~config:timing_wheel_config ~start:now in
+  let events = Timing_wheel.create ~config:timing_wheel_config ~start:now in
   let rec time_source : _ Synchronous_time_source.T1.t =
-    { advance_errors = []
+    { id = Types.Time_source_id.create ()
+    ; advance_errors = []
     ; am_advancing = false
     ; events
     ; handle_fired = (fun alarm -> handle_fired time_source (Alarm.value events alarm))

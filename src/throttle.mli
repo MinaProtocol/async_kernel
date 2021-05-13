@@ -32,15 +32,13 @@ module T2 : sig
   include Invariant.S2 with type ('a, 'b) t := ('a, 'b) t
 end
 
-type 'a t = ('a, [`throttle]) T2.t [@@deriving sexp_of]
+type 'a t = ('a, [ `throttle ]) T2.t [@@deriving sexp_of]
 
 include Invariant.S1 with type 'a t := 'a t
 
 (** [create ~continue_on_error ~max_concurrent_jobs] returns a throttle that will run up
-    to [max_concurrent_jobs] concurrently.
-
-    If some job raises an exception, then the throttle will be killed, unless
-    [continue_on_error] is true. *)
+    to [max_concurrent_jobs] concurrently.  If some job raises an exception, then the
+    throttle will be killed, unless [continue_on_error] is true. *)
 val create : continue_on_error:bool -> max_concurrent_jobs:int -> unit t
 
 (** [create_with ~continue_on_error job_resources] returns a throttle that will run up to
@@ -51,8 +49,10 @@ val create_with : continue_on_error:bool -> 'a list -> 'a t
 type 'a outcome =
   [ `Ok of 'a
   | `Aborted
-  | `Raised of exn ]
+  | `Raised of exn
+  ]
 [@@deriving sexp_of]
+
 
 (** [enqueue t job] schedules [job] to be run as soon as possible.  Jobs are guaranteed to
     be started in the order they are [enqueue]d and to not be started during the call to
@@ -61,6 +61,13 @@ type 'a outcome =
 val enqueue' : ('a, _) T2.t -> ('a -> 'b Deferred.t) -> 'b outcome Deferred.t
 
 val enqueue : ('a, _) T2.t -> ('a -> 'b Deferred.t) -> 'b Deferred.t
+
+(** [enqueue_exclusive] schedules a job that occupies all slots of the throttle, so it
+    won't run concurrently with any other job.  The job counts as being enqueued normally,
+    so it runs after the jobs enqueued previously and before the jobs enqueued later.
+    [enqueue_exclusive] takes O(max_concurrent_jobs) time, so you should not use it when
+    [max_concurrent_jobs = Int.max_value]. *)
+val enqueue_exclusive : ('a, _) T2.t -> (unit -> 'b Deferred.t) -> 'b Deferred.t
 
 (** [monad_sequence_how ~how ~f] returns a function that behaves like [f], except that it
     uses a throttle to limit the number of concurrent invocations that can be running
@@ -74,6 +81,7 @@ val monad_sequence_how2
   :  ?how:Monad_sequence.how
   -> f:('a1 -> 'a2 -> 'b Deferred.t)
   -> ('a1 -> 'a2 -> 'b Deferred.t) Staged.t
+
 
 (** [prior_jobs_done t] becomes determined when all of the jobs that were previously
     enqueued in [t] have completed. *)
@@ -122,7 +130,7 @@ val cleaned : (_, _) T2.t -> unit Deferred.t
 (** A sequencer is a throttle that is specialized to only allow one job at a time and to,
     by default, not continue on error. *)
 module Sequencer : sig
-  type 'a t = ('a, [`sequencer]) T2.t [@@deriving sexp_of]
+  type 'a t = ('a, [ `sequencer ]) T2.t [@@deriving sexp_of]
 
   val create : ?continue_on_error:bool (** default is [false] *) -> 'a -> 'a t
 end

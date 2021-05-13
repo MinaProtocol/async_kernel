@@ -17,18 +17,37 @@ module Clock_ns : Clock_intf.Clock_deprecated with module Time := Time_ns
 
 module Time_ns : sig
   include module type of struct
-  include Time_ns
-end
+    include Time_ns
+  end
 
   val now : unit -> t [@@deprecated "[since 2016-02] Use [Time_source]"]
 end
 
-module Scheduler : sig
+module Time : sig
   include module type of struct
-  include Scheduler
+    include Time
+  end
+
+  val now : unit -> t [@@deprecated "[since 2019-05] Use [Time_source]"]
 end
 
-  val cycle_start : t -> Time_ns.t [@@deprecated "[since 2016-02] Use [Time_source]"]
+module Async_kernel_scheduler : sig
+  include module type of struct
+    include Async_kernel_scheduler
+  end
+
+  val cycle_start : unit -> Time.t [@@deprecated "[since 2016-02] Use [Time_source]"]
+
+  val cycle_start_ns : unit -> Time_ns.t
+  [@@deprecated "[since 2016-02] Use [Time_source]"]
+end
+
+module Date : sig
+  include module type of struct
+    include Date
+  end
+
+  val today : zone:Time.Zone.t -> t [@@deprecated "[since 2019-05] Use [Time_source]"]
 end
 
 val at : Time_ns.t -> unit Deferred.t [@@deprecated "[since 2016-02] Use [Time_source]"]
@@ -48,5 +67,5 @@ val every
 val with_timeout
   :  Time_ns.Span.t
   -> 'a Deferred.t
-  -> [`Timeout | `Result of 'a] Deferred.t
+  -> [ `Timeout | `Result of 'a ] Deferred.t
 [@@deprecated "[since 2016-02] Use [Time_source]"]
