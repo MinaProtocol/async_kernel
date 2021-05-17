@@ -16,6 +16,8 @@ let cycle_times_ns () = map_cycle_times (t ()) ~f:Fn.id
 let cycle_times () = map_cycle_times (t ()) ~f:Time_ns.Span.to_span_float_round_nearest
 let total_cycle_time () = total_cycle_time (t ())
 let long_cycles ~at_least = long_cycles (t ()) ~at_least
+let long_cycles_with_context ~at_least = long_cycles_with_context (t ()) ~at_least
+let long_jobs_with_context = long_jobs_with_context (t ())
 let event_precision_ns () = event_precision (t ())
 let event_precision () = Time_ns.Span.to_span_float_round_nearest (event_precision_ns ())
 

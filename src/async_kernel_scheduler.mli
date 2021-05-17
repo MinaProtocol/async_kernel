@@ -81,6 +81,12 @@ val cycle_times_ns : unit -> Time_ns.Span.t Async_stream.t
     allocates a stream entry when there is a long cycle, rather than on every cycle. *)
 val long_cycles : at_least:Time_ns.Span.t -> Time_ns.Span.t Async_stream.t
 
+(** expose for Mina; like [long_cycles] with [Execution_context.t] in result *)
+val long_cycles_with_context: at_least:Time_ns.Span.t -> (Time_ns.Span.t * Execution_context.t) Async_stream.t
+
+(** expose for Mina *)
+val long_jobs_with_context: (Execution_context.t * Time_ns_in_this_directory.Span.t) Async_stream.t
+
 (** [cycle_count ()] returns the total number of Async cycles that have happened. *)
 val cycle_count : unit -> int
 
