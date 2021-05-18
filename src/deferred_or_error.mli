@@ -11,7 +11,7 @@
     that property in mind, [Deferred.Or_error.List.iter], for example, does not wrap the
     execution of the given iter function [f] inside a monitor.  If one of these
     application raises, the whole function [Deferred.Or_error.List.iter] will raise as a
-    way to try to alert the developer that one the function is broken and needs attention
+    way to try to alert the developer that the function is broken and needs attention
     and fixing, rather than silently catching the error and converting it to
     [Or_error.Error].
 
@@ -30,7 +30,8 @@ type 'a t = 'a Or_error.t Deferred.t
 (** The applicative operations match the behavior of the applicative operations in
     [Or_error].  This means that [all] and [all_unit] are equivalent to [combine_errors]
     and [combine_errors_unit] respectively. *)
-include Applicative.S with type 'a t := 'a t
+include
+  Applicative.S with type 'a t := 'a t
 
 (** [return x = Deferred.return (Ok x)] **)
 include Monad.S with type 'a t := 'a t
@@ -38,7 +39,7 @@ include Monad.S with type 'a t := 'a t
 (** [fail error = Deferred.return (Error error)] **)
 val fail : Error.t -> _ t
 
-val ignore : _ t -> unit t
+val ignore : _ t -> unit t [@@deprecated "[since 2019-06] Use [ignore_m] instead"]
 
 (** These functions are direct analogs of the corresponding [Core.Or_error] functions. *)
 val ok_exn : 'a t -> 'a Deferred.t
@@ -50,12 +51,14 @@ val error_s : Sexp.t -> _ t
 val error_string : string -> _ t
 val errorf : ('a, unit, string, _ t) format4 -> 'a
 val tag : 'a t -> tag:string -> 'a t
+val tag_s : 'a t -> tag:Sexp.t -> 'a t
 val tag_arg : 'a t -> string -> 'b -> ('b -> Sexp.t) -> 'a t
 val unimplemented : string -> _ t
 
 
 val combine_errors : 'a t list -> 'a list t
 val combine_errors_unit : unit t list -> unit t
+val filter_ok_at_least_one : 'a t list -> 'a list t
 
 (** [find_map_ok l ~f] returns the first value in [l] for which [f] returns [Ok],
     otherwise it returns the same error as [combine_errors (Deferred.List.map l ~f)]. *)
@@ -74,6 +77,7 @@ val ok_unit : unit t
     or kept ([extract_exn:false]). *)
 val try_with
   :  ?extract_exn:bool (** default is [false] *)
+  -> ?run:[ `Now | `Schedule ] (** default is [`Schedule] *)
   -> ?here:Lexing.position
   -> ?name:string
   -> (unit -> 'a Deferred.t)
@@ -81,6 +85,7 @@ val try_with
 
 val try_with_join
   :  ?extract_exn:bool (** default is [false] *)
+  -> ?run:[ `Now | `Schedule ] (** default is [`Schedule] *)
   -> ?here:Lexing.position
   -> ?name:string
   -> (unit -> 'a t)
@@ -106,5 +111,5 @@ module List : Monad_sequence.S with type 'a monad := 'a t with type 'a t := 'a l
     If [f] returns an [Or_error.Error] the loop terminates and returns. *)
 val repeat_until_finished
   :  'state
-  -> ('state -> [`Repeat of 'state | `Finished of 'result] t)
+  -> ('state -> [ `Repeat of 'state | `Finished of 'result ] t)
   -> 'result t

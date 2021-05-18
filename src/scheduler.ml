@@ -4,13 +4,7 @@ open! Deferred_std
 module Deferred = Deferred1
 module Scheduler = Scheduler1
 module Stream = Async_stream
-
-include (
-  Scheduler :
-    module type of Scheduler
-  with module Bvar := Scheduler.Bvar
-  with module Ivar := Scheduler.Ivar
-  with module Synchronous_time_source := Scheduler.Synchronous_time_source)
+include (Scheduler : module type of Scheduler with module Bvar := Scheduler.Bvar)
 
 let t = Scheduler.t
 
@@ -28,10 +22,10 @@ let with_local key value ~f =
 
 let main_execution_context = (t ()).main_execution_context
 let can_run_a_job t = num_pending_jobs t > 0 || Bvar.has_any_waiters t.yield
-let has_upcoming_event t = not (Timing_wheel_ns.is_empty (events t))
-let next_upcoming_event t = Timing_wheel_ns.next_alarm_fires_at (events t)
-let next_upcoming_event_exn t = Timing_wheel_ns.next_alarm_fires_at_exn (events t)
-let event_precision t = Timing_wheel_ns.alarm_precision (events t)
+let has_upcoming_event t = not (Timing_wheel.is_empty (events t))
+let next_upcoming_event t = Timing_wheel.next_alarm_fires_at (events t)
+let next_upcoming_event_exn t = Timing_wheel.next_alarm_fires_at_exn (events t)
+let event_precision t = Timing_wheel.alarm_precision (events t)
 let cycle_start t = t.cycle_start
 let run_every_cycle_start t ~f = t.run_every_cycle_start <- f :: t.run_every_cycle_start
 
@@ -159,7 +153,7 @@ let force_current_cycle_to_end t =
 let send_exn = Some Monitor.send_exn
 
 let advance_clock t ~now =
-  Synchronous_time_source0.advance t.time_source ~to_:now ~send_exn
+  Synchronous_time_source0.advance_internal t.time_source ~to_:now ~send_exn
 ;;
 
 let run_cycle t =

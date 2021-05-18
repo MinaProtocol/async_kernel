@@ -1,6 +1,7 @@
 module Inria_sys = Sys
 module Time_ns_in_this_directory = Time_ns
 open Core_kernel
+open Poly
 module Time_ns = Time_ns_in_this_directory
 
 let sec = Time_ns.Span.of_sec
@@ -136,23 +137,23 @@ module File_descr_watcher = struct
 end
 
 type t =
-  { abort_after_thread_pool_stuck_for : Time_ns.Span.t sexp_option
-  ; check_invariants : bool sexp_option
-  ; detect_invalid_access_from_thread : bool sexp_option
-  ; dump_core_on_job_delay : Dump_core_on_job_delay.t sexp_option
-  ; epoll_max_ready_events : Epoll_max_ready_events.t sexp_option
-  ; file_descr_watcher : File_descr_watcher.t sexp_option
-  ; max_inter_cycle_timeout : Max_inter_cycle_timeout.t sexp_option
-  ; max_num_open_file_descrs : Max_num_open_file_descrs.t sexp_option
-  ; max_num_threads : Max_num_threads.t sexp_option
-  ; max_num_jobs_per_priority_per_cycle :
-      Max_num_jobs_per_priority_per_cycle.t sexp_option
-  ; min_inter_cycle_timeout : Min_inter_cycle_timeout.t sexp_option
-  ; print_debug_messages_for : Debug_tag.t list sexp_option
-  ; record_backtraces : bool sexp_option
-  ; report_thread_pool_stuck_for : Time_ns.Span.t sexp_option
-  ; thread_pool_cpu_affinity : Thread_pool_cpu_affinity.t sexp_option
-  ; timing_wheel_config : Timing_wheel_ns.Config.t sexp_option
+  { abort_after_thread_pool_stuck_for : Time_ns.Span.t option [@sexp.option]
+  ; check_invariants : bool option [@sexp.option]
+  ; detect_invalid_access_from_thread : bool option [@sexp.option]
+  ; dump_core_on_job_delay : Dump_core_on_job_delay.t option [@sexp.option]
+  ; epoll_max_ready_events : Epoll_max_ready_events.t option [@sexp.option]
+  ; file_descr_watcher : File_descr_watcher.t option [@sexp.option]
+  ; max_inter_cycle_timeout : Max_inter_cycle_timeout.t option [@sexp.option]
+  ; max_num_open_file_descrs : Max_num_open_file_descrs.t option [@sexp.option]
+  ; max_num_threads : Max_num_threads.t option [@sexp.option]
+  ; max_num_jobs_per_priority_per_cycle : Max_num_jobs_per_priority_per_cycle.t option
+                                          [@sexp.option]
+  ; min_inter_cycle_timeout : Min_inter_cycle_timeout.t option [@sexp.option]
+  ; print_debug_messages_for : Debug_tag.t list option [@sexp.option]
+  ; record_backtraces : bool option [@sexp.option]
+  ; report_thread_pool_stuck_for : Time_ns.Span.t option [@sexp.option]
+  ; thread_pool_cpu_affinity : Thread_pool_cpu_affinity.t option [@sexp.option]
+  ; timing_wheel_config : Timing_wheel.Config.t option [@sexp.option]
   }
 [@@deriving fields, sexp]
 
@@ -177,15 +178,15 @@ let empty =
 ;;
 
 let default_timing_wheel_config_for_word_size (word_size : Word_size.t) =
-  let module Alarm_precision = Timing_wheel_ns.Alarm_precision in
+  let module Alarm_precision = Timing_wheel.Alarm_precision in
   let alarm_precision, level_bits =
     match word_size with
     | W32 -> Alarm_precision.about_one_millisecond, [ 10; 10; 9 ]
     | W64 -> Alarm_precision.(div about_one_millisecond ~pow2:3), [ 14; 15; 9; 6 ]
   in
-  Timing_wheel_ns.Config.create
+  Timing_wheel.Config.create
     ~alarm_precision
-    ~level_bits:(Timing_wheel_ns.Level_bits.create_exn level_bits)
+    ~level_bits:(Timing_wheel.Level_bits.create_exn level_bits)
     ()
 ;;
 
@@ -310,12 +311,12 @@ let field_descriptions () : string =
               [%message
                 ""
                   ~_:
-                    ( concat
-                        [ "min "
-                        ; default |> Max_num_open_file_descrs.raw |> Int.to_string_hum
-                        ; " [ulimit -n -H]"
-                        ]
-                      : string )])
+                    (concat
+                       [ "min "
+                       ; default |> Max_num_open_file_descrs.raw |> Int.to_string_hum
+                       ; " [ulimit -n -H]"
+                       ]
+                     : string)])
            [ {|
   The maximum number of open file descriptors allowed at any one time.|} ])
       ~max_num_threads:
@@ -413,7 +414,7 @@ let field_descriptions () : string =
            ])
       ~timing_wheel_config:
         (field
-           [%sexp_of: Timing_wheel_ns.Config.t]
+           [%sexp_of: Timing_wheel.Config.t]
            [ {|
   This is used to adjust the time/space tradeoff in the timing wheel
   used to implement Async's clock.  Time is split into intervals of

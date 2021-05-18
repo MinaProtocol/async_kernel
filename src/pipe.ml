@@ -10,7 +10,8 @@ let check_invariant = ref false
 module Flushed_result = struct
   type t =
     [ `Ok
-    | `Reader_closed ]
+    | `Reader_closed
+    ]
   [@@deriving compare, sexp_of]
 
   let equal = [%compare.equal: t]
@@ -57,15 +58,14 @@ module Consumer : sig
   val values_sent_downstream_and_flushed : t -> Flushed_result.t Deferred.t
 end = struct
   type t =
-    { pipe_id :
-        int
-    (* [values_read] reflects whether values the consumer has read from the pipe have been
-       sent downstream or if not, holds an ivar that is to be filled when they are. *)
-    ; mutable values_read :
-        [`Have_been_sent_downstream | `Have_not_been_sent_downstream of unit Ivar.t]
-    (* [downstream_flushed ()] returns when all prior values that the consumer has
-       passed downstream have been flushed all the way down the chain of pipes. *)
-    ; downstream_flushed : unit -> Flushed_result.t Deferred.t
+    { pipe_id : int
+    ; (* [values_read] reflects whether values the consumer has read from the pipe have been
+         sent downstream or if not, holds an ivar that is to be filled when they are. *)
+      mutable values_read :
+        [ `Have_been_sent_downstream | `Have_not_been_sent_downstream of unit Ivar.t ]
+    ; (* [downstream_flushed ()] returns when all prior values that the consumer has
+         passed downstream have been flushed all the way down the chain of pipes. *)
+      downstream_flushed : unit -> Flushed_result.t Deferred.t
     }
   [@@deriving fields, sexp_of]
 
@@ -121,9 +121,9 @@ module Blocked_read = struct
 
      If a pipe is closed, then all blocked reads will be filled with [`Eof]. *)
   type 'a wants =
-    | Zero of [`Eof | `Ok] Ivar.t
-    | One of [`Eof | `Ok of 'a] Ivar.t
-    | At_most of int * [`Eof | `Ok of 'a Q.t] Ivar.t
+    | Zero of [ `Eof | `Ok ] Ivar.t
+    | One of [ `Eof | `Ok of 'a ] Ivar.t
+    | At_most of int * [ `Eof | `Ok of 'a Q.t ] Ivar.t
   [@@deriving sexp_of]
 
   type 'a t =
@@ -179,7 +179,7 @@ module Blocked_flush = struct
      preceding the flush will never be read. *)
   type t =
     { fill_when_num_values_read : int
-    ; ready : [`Ok | `Reader_closed] Ivar.t
+    ; ready : [ `Ok | `Reader_closed ] Ivar.t
     }
   [@@deriving fields, sexp_of]
 
@@ -189,58 +189,49 @@ end
 type ('a, 'phantom) t =
   { (* [id] is an integer used to distinguish pipes when debugging. *)
     id : int (* [buffer] holds values written to the pipe that have not yet been read. *)
-  ; mutable buffer :
-      'a Q.t
-  (* [size_budget] governs pushback on writers to the pipe.
+  ; mutable buffer : 'a Q.t
+  ; (* [size_budget] governs pushback on writers to the pipe.
 
-     There is *no* invariant that [Q.length buffer <= size_budget].  There is no hard
-     upper bound on the number of elements that can be stuffed into the [buffer].  This
-     is due to the way we handle writes.  When we do a write, all of the values written
-     are immediately enqueued into [buffer].  After the write, if [Q.length buffer <=
-     t.size_budget], then the writer will be notified to continue writing.  After the
-     write, if [length t > t.size_budget], then the write will block until the pipe is
-     under budget. *)
-  ; mutable size_budget :
-      int
-  (* [pushback] is used to give feedback to writers about whether they should write to
-     the pipe.  [pushback] is full iff [length t <= t.size_budget || is_closed t]. *)
-  ; mutable pushback :
-      unit Ivar.t
-  (* [num_values_read] keeps track of the total number of values that have been read
-     from the pipe.  We do not have to worry about overflow in [num_values_read].  You'd
-     need to write 2^62 elements to the pipe, which would take about 146 years, at a
-     flow rate of 1 size-unit/nanosecond. *)
-  ; mutable num_values_read :
-      int
-  (* [blocked_flushes] holds flushes whose preceding elements have not been completely
-     read.  For each blocked flush, the number of elements that need to be read from the
-     pipe in order to fill the flush is                        :
+       There is *no* invariant that [Q.length buffer <= size_budget].  There is no hard
+       upper bound on the number of elements that can be stuffed into the [buffer].  This
+       is due to the way we handle writes.  When we do a write, all of the values written
+       are immediately enqueued into [buffer].  After the write, if [Q.length buffer <=
+       t.size_budget], then the writer will be notified to continue writing.  After the
+       write, if [length t > t.size_budget], then the write will block until the pipe is
+       under budget. *)
+    mutable size_budget : int
+  ; (* [pushback] is used to give feedback to writers about whether they should write to
+       the pipe.  [pushback] is full iff [length t <= t.size_budget || is_closed t]. *)
+    mutable pushback : unit Ivar.t
+  ; (* [num_values_read] keeps track of the total number of values that have been read
+       from the pipe.  We do not have to worry about overflow in [num_values_read].  You'd
+       need to write 2^62 elements to the pipe, which would take about 146 years, at a
+       flow rate of 1 size-unit/nanosecond. *)
+    mutable num_values_read : int
+  ; (* [blocked_flushes] holds flushes whose preceding elements have not been completely
+       read.  For each blocked flush, the number of elements that need to be read from the
+       pipe in order to fill the flush is                        :
 
-     fill_when_num_values_read - num_values_read
+       fill_when_num_values_read - num_values_read
 
-     Keeping the data in this form allows us to change a single field(num_values_read)
-     when we consume values instead of having to iterate over the whole queue of
-     flushes. *)
-  ; blocked_flushes :
-      Blocked_flush.t Q.t
-  (* [blocked_reads] holds reads that are waiting on data to be written to the pipe. *)
-  ; blocked_reads :
-      'a Blocked_read.t Q.t
-  (* [closed] is filled when we close the write end of the pipe. *)
-  ; closed :
-      unit Ivar.t
-  (* [read_closed] is filled when we close the read end of the pipe. *)
-  ; read_closed :
-      unit Ivar.t
-  (* [consumers] is a list of all consumers that may be handling values read from the
-     pipe. *)
-  ; mutable consumers :
-      Consumer.t list
-  (* [upstream_flusheds] has a function for each pipe immediately upstream of this one.
-     That function walks to the head(s) of the upstream pipe, and calls
-     [downstream_flushed] on the head(s).  See the definition of [upstream_flushed]
-     below. *)
-  ; upstream_flusheds : (unit -> Flushed_result.t Deferred.t) Bag.t
+       Keeping the data in this form allows us to change a single field(num_values_read)
+       when we consume values instead of having to iterate over the whole queue of
+       flushes. *)
+    blocked_flushes : Blocked_flush.t Q.t
+  ; (* [blocked_reads] holds reads that are waiting on data to be written to the pipe. *)
+    blocked_reads : 'a Blocked_read.t Q.t
+  ; (* [closed] is filled when we close the write end of the pipe. *)
+    closed : unit Ivar.t
+  ; (* [read_closed] is filled when we close the read end of the pipe. *)
+    read_closed : unit Ivar.t
+  ; (* [consumers] is a list of all consumers that may be handling values read from the
+       pipe. *)
+    mutable consumers : Consumer.t list
+  ; (* [upstream_flusheds] has a function for each pipe immediately upstream of this one.
+       That function walks to the head(s) of the upstream pipe, and calls
+       [downstream_flushed] on the head(s).  See the definition of [upstream_flushed]
+       below. *)
+    upstream_flusheds : (unit -> Flushed_result.t Deferred.t) Bag.t
   }
 [@@deriving fields, sexp_of]
 
@@ -319,16 +310,16 @@ end
 
 let id_ref = ref 0
 
-let create () =
+let create_internal ~initial_buffer =
   incr id_ref;
   let t =
     { id = !id_ref
     ; closed = Ivar.create ()
-    ; read_closed =
-        Ivar.create ()
-    ; size_budget = 0
+    ; read_closed = Ivar.create ()
+    ;
+      size_budget = 0
     ; pushback = Ivar.create ()
-    ; buffer = Q.create ()
+    ; buffer = initial_buffer
     ; num_values_read = 0
     ; blocked_flushes = Q.create ()
     ; blocked_reads = Q.create ()
@@ -336,8 +327,13 @@ let create () =
     ; upstream_flusheds = Bag.create ()
     }
   in
-  Ivar.fill t.pushback ();
+  t
+;;
+
+let create () =
+  let t = create_internal ~initial_buffer:(Q.create ()) in
   (* initially, the pipe does not pushback *)
+  Ivar.fill t.pushback ();
   if !check_invariant then invariant t;
   t, t
 ;;
@@ -462,7 +458,7 @@ let set_size_budget t size_budget =
 ;;
 
 let fill_blocked_reads t =
-  while not (Q.is_empty t.blocked_reads) && not (is_empty t) do
+  while (not (Q.is_empty t.blocked_reads)) && not (is_empty t) do
     let blocked_read = Q.dequeue_exn t.blocked_reads in
     let consumer = blocked_read.consumer in
     match blocked_read.wants with
@@ -630,7 +626,7 @@ let values_available t =
         Q.enqueue t.blocked_reads (Blocked_read.(create (Zero ivar)) None)))
 ;;
 
-let read_choice t = choice (values_available t) (fun (_ : [`Ok | `Eof]) -> read_now t)
+let read_choice t = choice (values_available t) (fun (_ : [ `Ok | `Eof ]) -> read_now t)
 
 let read_choice_single_consumer_exn t here =
   Deferred.Choice.map (read_choice t) ~f:(function
@@ -999,7 +995,8 @@ let transfer_gen
 ;;
 
 let transfer' ?max_queue_length input output ~f =
-  transfer_gen (read_now' ?max_queue_length) write' input output ~f:(fun q k -> f q >>> k)
+  transfer_gen (read_now' ?max_queue_length) write' input output ~f:(fun q k ->
+    f q >>> k)
 ;;
 
 let transfer input output ~f =
@@ -1051,10 +1048,10 @@ let fold_map = folding_map
 let filter input ~f = filter_map input ~f:(fun x -> if f x then Some x else None)
 
 let of_list l =
-  let reader, writer = create () in
-  don't_wait_for (write' writer (Q.of_list l));
-  close writer;
-  reader
+  let t = create_internal ~initial_buffer:(Q.of_list l) in
+  Ivar.fill t.closed ();
+  update_pushback t;
+  t
 ;;
 
 let singleton x =
@@ -1150,6 +1147,7 @@ let interleave inputs =
 ;;
 
 let merge inputs ~compare =
+  let module Heap = Pairing_heap in
   let r, w = create () in
   upon (closed w) (fun () -> List.iter inputs ~f:close_read);
   let heap = Heap.create ~cmp:(fun (a1, _) (a2, _) -> compare a1 a2) () in

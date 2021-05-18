@@ -8,7 +8,7 @@ open! Core_kernel
 open! Import
 module Async_kernel_config = Async_kernel_config
 module Async_kernel_require_explicit_time_source = Require_explicit_time_source
-module Async_kernel_scheduler = Scheduler
+module Async_kernel_scheduler = Async_kernel_scheduler
 module Bvar = Bvar
 module Clock_ns = Clock_ns
 module Condition = Async_condition
@@ -17,7 +17,6 @@ module Execution_context = Execution_context
 module Gc = Async_gc
 module Invariant = Async_invariant
 module Ivar = Ivar
-module Quickcheck = Async_quickcheck
 module Lazy_deferred = Lazy_deferred
 module Monad_sequence = Monad_sequence
 module Monitor = Monitor
@@ -86,10 +85,10 @@ end
    it to another library will cause it to break with [X_LIBRARY_INLINING=false]. *)
 let%test_unit "[return ()] does not allocate" =
   let w1 = Gc.minor_words () in
-  ignore (return () : _ Deferred.t);
-  ignore (Deferred.return () : _ Deferred.t);
-  ignore (Deferred.Let_syntax.return () : _ Deferred.t);
-  ignore (Deferred.Let_syntax.Let_syntax.return () : _ Deferred.t);
+  ignore (Sys.opaque_identity (return ()) : _ Deferred.t);
+  ignore (Sys.opaque_identity (Deferred.return ()) : _ Deferred.t);
+  ignore (Sys.opaque_identity (Deferred.Let_syntax.return ()) : _ Deferred.t);
+  ignore (Sys.opaque_identity (Deferred.Let_syntax.Let_syntax.return ()) : _ Deferred.t);
   let w2 = Gc.minor_words () in
   [%test_result: int] w2 ~expect:w1
 ;;

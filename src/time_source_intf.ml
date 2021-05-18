@@ -26,15 +26,21 @@ module type Time_source = sig
     val invariant_with_jobs : job:Job.t Invariant.t -> t Invariant.t
   end
 
+  module Id : Unique_id.Id
+
   type t = read T1.t [@@deriving sexp_of]
+
+  (** [id t] returns a unique, consistent identifier which can be used e.g. as a map or
+      hash table key. *)
+  val id : _ T1.t -> Id.t
 
   include Invariant.S with type t := t
 
   val invariant_with_jobs : job:Job.t Invariant.t -> t Invariant.t
-  val read_only : [> read] T1.t -> t
+  val read_only : [> read ] T1.t -> t
 
   val create
-    :  ?timing_wheel_config:Timing_wheel_ns.Config.t
+    :  ?timing_wheel_config:Timing_wheel.Config.t
     -> now:Time_ns.t
     -> unit
     -> read_write T1.t
@@ -49,22 +55,38 @@ module type Time_source = sig
 
   (** Accessors.  [now (wall_clock ())] behaves specially; see [wall_clock] above. *)
 
-  val alarm_precision : [> read] T1.t -> Time_ns.Span.t
-  val next_alarm_fires_at : [> read] T1.t -> Time_ns.t option
-  val now : [> read] T1.t -> Time_ns.t
+  val alarm_precision : [> read ] T1.t -> Time_ns.Span.t
+  val next_alarm_fires_at : [> read ] T1.t -> Time_ns.t option
+  val now : [> read ] T1.t -> Time_ns.t
 
   (** Removes the special behavior of [now] for [wall_clock]; it always returns the
       timing_wheel's notion of now. *)
-  val timing_wheel_now : [> read] T1.t -> Time_ns.t
+  val timing_wheel_now : [> read ] T1.t -> Time_ns.t
 
-  (** Unlike in [Synchronous_time_source], the [advance] function here only approximately
-      determines the set of events to fire. You should also call [fire_past_alarms] if you
-      want precision (see docs for [Timing_wheel_ns.advance_clock] vs.
-      [Timing_wheel_ns.fire_past_alarms]). *)
-  val advance : [> write] T1.t -> to_:Time_ns.t -> unit
 
-  val advance_by : [> write] T1.t -> Time_ns.Span.t -> unit
-  val fire_past_alarms : [> write] T1.t -> unit
+  (** Instead of [advance_directly], you probably should use [advance_by_alarms].
+      [advance_directly t ~to_] advances the clock directly to [to_], whereas
+      [advance_by_alarms] advances the clock in steps, to each intervening alarm.
+      [advance_directly] approximately determines the set of events to fire, up to
+      timing-wheel alarm precision, whereas [advance_by_alarms] fires all alarms whose
+      time is [<= to_].  With [advance_directly], you must call [fire_past_alarms] if you
+      want that behavior (see docs for [Timing_wheel.advance_clock] vs.
+      [Timing_wheel.fire_past_alarms]). *)
+  val advance_directly : [> write ] T1.t -> to_:Time_ns.t -> unit
+
+  val advance : [> write ] T1.t -> to_:Time_ns.t -> unit
+  [@@deprecated
+    "[since 2019-06] Use [advance_directly] (to preserve behavior) or \
+     [advance_by_alarms]"]
+
+  val advance_directly_by : [> write ] T1.t -> Time_ns.Span.t -> unit
+
+  val advance_by : [> write ] T1.t -> Time_ns.Span.t -> unit
+  [@@deprecated
+    "[since 2019-06] Use [advance_directly_by] (to preserve behavior) or \
+     [advance_by_alarms_by]"]
+
+  val fire_past_alarms : [> write ] T1.t -> unit
 
   (** [advance_by_alarms t] repeatedly calls [advance t] to drive the time forward in
       steps, where each step is the minimum of [to_] and the next alarm time. After each
@@ -78,8 +100,16 @@ module type Time_source = sig
       chance to fire with approximately the same timing as they would live. *)
   val advance_by_alarms
     :  ?wait_for:(unit -> unit Deferred.t)
-    -> [> write] T1.t
+    -> [> write ] T1.t
     -> to_:Time_ns.t
+    -> unit Deferred.t
+
+  (** [advance_by_alarms_by ?wait_for t by] is equivalent to:
+      [advance_by_alarms ?wait_for t ~to_:(Time_ns.add (now t) by)] *)
+  val advance_by_alarms_by
+    :  ?wait_for:(unit -> unit Deferred.t)
+    -> [> write ] T1.t
+    -> Time_ns.Span.t
     -> unit Deferred.t
 
   module Continue : sig
@@ -94,7 +124,7 @@ module type Time_source = sig
     -> ?stop:unit Deferred.t (** default is [Deferred.never ()] *)
     -> ?continue_on_error:bool (** default is [true] *)
     -> ?finished:unit Ivar.t
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> f:(unit -> unit Deferred.t)
     -> continue:Continue.t
     -> unit
@@ -103,18 +133,18 @@ module type Time_source = sig
       explicit [t] argument.  See {{!Async_kernel.Clock_intf}[Clock_intf]} for
       documentation. *)
 
-  val run_at : [> read] T1.t -> Time_ns.t -> ('a -> unit) -> 'a -> unit
-  val run_after : [> read] T1.t -> Time_ns.Span.t -> ('a -> unit) -> 'a -> unit
+  val run_at : [> read ] T1.t -> Time_ns.t -> ('a -> unit) -> 'a -> unit
+  val run_after : [> read ] T1.t -> Time_ns.Span.t -> ('a -> unit) -> 'a -> unit
 
 
-  val at : [> read] T1.t -> Time_ns.t -> unit Deferred.t
-  val after : [> read] T1.t -> Time_ns.Span.t -> unit Deferred.t
+  val at : [> read ] T1.t -> Time_ns.t -> unit Deferred.t
+  val after : [> read ] T1.t -> Time_ns.Span.t -> unit Deferred.t
 
   val with_timeout
-    :  [> read] T1.t
+    :  [> read ] T1.t
     -> Time_ns.Span.t
     -> 'a Deferred.t
-    -> [`Timeout | `Result of 'a] Deferred.t
+    -> [ `Timeout | `Result of 'a ] Deferred.t
 
   module Event : sig
     type ('a, 'h) t [@@deriving sexp_of]
@@ -133,8 +163,8 @@ module type Time_source = sig
     end
 
     val status : ('a, 'h) t -> ('a, 'h) Status.t
-    val run_at : [> read] T1.t -> Time_ns.t -> ('z -> 'h) -> 'z -> (_, 'h) t
-    val run_after : [> read] T1.t -> Time_ns.Span.t -> ('z -> 'h) -> 'z -> (_, 'h) t
+    val run_at : [> read ] T1.t -> Time_ns.t -> ('z -> 'h) -> 'z -> (_, 'h) t
+    val run_after : [> read ] T1.t -> Time_ns.Span.t -> ('z -> 'h) -> 'z -> (_, 'h) t
 
     module Abort_result : sig
       type ('a, 'h) t =
@@ -167,20 +197,20 @@ module type Time_source = sig
 
     val reschedule_at : ('a, 'h) t -> Time_ns.t -> ('a, 'h) Reschedule_result.t
     val reschedule_after : ('a, 'h) t -> Time_ns.Span.t -> ('a, 'h) Reschedule_result.t
-    val at : [> read] T1.t -> Time_ns.t -> (_, unit) t
-    val after : [> read] T1.t -> Time_ns.Span.t -> (_, unit) t
+    val at : [> read ] T1.t -> Time_ns.t -> (_, unit) t
+    val after : [> read ] T1.t -> Time_ns.Span.t -> (_, unit) t
   end
 
   val at_varying_intervals
     :  ?stop:unit Deferred.t
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> (unit -> Time_ns.Span.t)
     -> unit Async_stream.t
 
   val at_intervals
     :  ?start:Time_ns.t
     -> ?stop:unit Deferred.t
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> Time_ns.Span.t
     -> unit Async_stream.t
 
@@ -190,7 +220,7 @@ module type Time_source = sig
     -> ?stop:unit Deferred.t (** default is [Deferred.never ()] *)
     -> ?continue_on_error:bool (** default is [true] *)
     -> ?finished:unit Ivar.t
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> Time_ns.Span.t
     -> (unit -> unit Deferred.t)
     -> unit
@@ -199,7 +229,7 @@ module type Time_source = sig
     :  ?start:unit Deferred.t (** default is [return ()] *)
     -> ?stop:unit Deferred.t (** default is [Deferred.never ()] *)
     -> ?continue_on_error:bool (** default is [true] *)
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> Time_ns.Span.t
     -> (unit -> unit)
     -> unit
@@ -208,7 +238,7 @@ module type Time_source = sig
     :  ?start:Time_ns.t (** default is [Time_ns.now ()] *)
     -> ?stop:unit Deferred.t (** default is [Deferred.never ()] *)
     -> ?continue_on_error:bool (** default is [true] *)
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> Time_ns.Span.t
     -> (unit -> unit Deferred.t)
     -> unit
@@ -217,7 +247,7 @@ module type Time_source = sig
     :  ?start:Time_ns.t (** default is [Time_ns.now ()] *)
     -> ?stop:unit Deferred.t (** default is [Deferred.never ()] *)
     -> ?continue_on_error:bool (** default is [true] *)
-    -> [> read] T1.t
+    -> [> read ] T1.t
     -> Time_ns.Span.t
     -> (unit -> unit)
     -> unit

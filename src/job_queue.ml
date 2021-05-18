@@ -12,22 +12,19 @@ module A = Uniform_array
 (* This is essentially a specialized [Flat_queue], done for reasons of speed. *)
 type t = Types.Job_queue.t =
   { mutable num_jobs_run : int
-  ; mutable jobs_left_this_cycle :
-      int
-  (* [jobs] is an array of length [capacity t * slots_per_elt], where each elt has the
-     three components of a job ([execution_context], [f], [a]) in consecutive spots in
-     [jobs].  [enqueue] doubles the length of [jobs] if [jobs] is full.  [jobs] never
-     shrinks.  [jobs] is somewhat like a [Core_kernel.Pool] specialized to 3-tuples; we
-     don't use [Pool] because that implements a set, where [jobs] is a queue. *)
-  ; mutable jobs :
-      Obj.t A.t sexp_opaque
-  (* [mask] is [capacity t - 1], and is used for quickly computing [i mod (capacity
-     t)] *)
-  ; mutable mask :
-      int
-  (* [front] is the index of the first job in the queue.  The array index of that job's
-     execution context is [front * slots_per_elt]. *)
-  ; mutable front : int
+  ; mutable jobs_left_this_cycle : int
+  ; (* [jobs] is an array of length [capacity t * slots_per_elt], where each elt has the
+       three components of a job ([execution_context], [f], [a]) in consecutive spots in
+       [jobs].  [enqueue] doubles the length of [jobs] if [jobs] is full.  [jobs] never
+       shrinks.  [jobs] is somewhat like a [Core_kernel.Pool] specialized to 3-tuples; we
+       don't use [Pool] because that implements a set, where [jobs] is a queue. *)
+    mutable jobs : (Obj.t A.t[@sexp.opaque])
+  ; (* [mask] is [capacity t - 1], and is used for quickly computing [i mod (capacity
+       t)] *)
+    mutable mask : int
+  ; (* [front] is the index of the first job in the queue.  The array index of that job's
+       execution context is [front * slots_per_elt]. *)
+    mutable front : int
   ; mutable length : int
   }
 [@@deriving fields, sexp_of]
@@ -144,9 +141,9 @@ let run_external_jobs t (scheduler : Scheduler.t) =
 let run_jobs (type a) t (scheduler : Scheduler.t) =
   (* We do the [try-with] outside of the [while] because it is cheaper than doing a
      [try-with] for each job. *)
+  (* [run_external_jobs] before entering the loop, since it might enqueue a job,
+     changing [t.length]. *)
   try
-    (* [run_external_jobs] before entering the loop, since it might enqueue a job,
-       changing [t.length]. *)
     run_external_jobs t scheduler;
     while can_run_a_job t do
       let this_job = offset t 0 in
@@ -174,7 +171,7 @@ let run_jobs (type a) t (scheduler : Scheduler.t) =
       (* [run_external_jobs] at each iteration of the [while] loop, for fairness. *)
       run_external_jobs t scheduler
     done;
-    Result.ok_unit
+    Ok ()
   with
   | exn ->
     (* We call [Exn.backtrace] immediately after catching an unhandled exception, to

@@ -2,10 +2,10 @@ open! Core_kernel
 open! Async_kernel
 open! Import
 
-include Eager_deferred1  (** @open *)
+module type S = Eager_deferred_intf.S
 
-(** Intended usage is to [open Eager_deferred.Use] to shadow operations from the non-eager
-    world and rebind them to their eager counterparts. *)
+include Eager_deferred1
+
 module Use = struct
   module Deferred = struct
     type 'a t = 'a Deferred.t
